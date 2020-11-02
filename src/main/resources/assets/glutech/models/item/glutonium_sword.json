@@ -1,0 +1,28 @@
+{
+	"parent": "item/handheld",
+	"textures": {
+		"layer0": "glutech:items/glutonium_sword"
+	},
+	"display": {
+		"firstperson_righthand": { 
+			"rotation": [65, -85, 90],
+			"translation": [0, 4, 2],
+			"scale": [0.8, 0.8, 0.8]
+		},
+		"firstperson_lefthand": { 
+			"rotation": [65, 95, -90],
+			"translation": [0, 4, 2],
+			"scale": [0.8, 0.8, 0.8]
+		},
+		"thirdperson_righthand": {
+			"rotation": [-55, -90, 0],
+			"translation": [0, 7.5, 0.5],
+			"scale": [1.1, 1.1, 1.1]
+		},
+		"thirdperson_lefthand": {
+			"rotation": [-55, 90, 0],
+			"translation": [0, 7.5, 0.5],
+			"scale": [1.1, 1.1, 1.1]
+		}
+	}
+}

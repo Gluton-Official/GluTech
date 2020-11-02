@@ -1,2 +1,2 @@
 # GluTech
-A generic tech mod made by me, Gluton.
+A generic tech mod by me, Gluton.

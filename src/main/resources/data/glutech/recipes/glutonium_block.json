@@ -1,0 +1,21 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"pattern":
+	[
+		"iii",
+		"iii",
+		"iii"
+	],
+	"key":
+	{
+		"i":
+		{
+			"item": "glutech:glutonium_ingot"
+		}
+	},
+	"result":
+	{
+		"item": "glutech:glutonium_block",
+		"count": 1
+	}
+}

@@ -1,0 +1,14 @@
+{
+	"item.glutech.glutonium_ingot": "Glutonium Ingot",
+	"item.glutech.glutite": "Glutite",
+	"item.glutech.glutonium_sword": "Glutonium Sword",
+	"item.glutech.glutonium_helmet": "Glutonium Helmet",
+	"item.glutech.glutonium_chestplate": "Glutonium Chestplate",
+	"item.glutech.glutonium_leggings": "Glutonium Leggings",
+	"item.glutech.glutonium_boots": "Glutonium Boots",
+
+	"block.glutech.glutite_ore": "Glutite Ore",
+	"block.glutech.glutonium_block": "Glutonium Block",
+
+	"itemGroup.glutech": "GluTech"
+}
