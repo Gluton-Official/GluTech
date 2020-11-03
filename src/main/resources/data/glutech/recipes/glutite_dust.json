@@ -1,0 +1,11 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"ingredients": [
+		{
+			"item": "glutech:glutite" 
+		}
+	],
+	"result": {
+		"item": "glutech:glutite_dust"
+	}
+}
