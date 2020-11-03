@@ -1,0 +1,11 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"ingredients": [
+		{
+			"tag": "forge:ores/netherite_scrap" 
+		}
+	],
+	"result": {
+		"item": "glutech:ancient_debris_powder"
+	}
+}
