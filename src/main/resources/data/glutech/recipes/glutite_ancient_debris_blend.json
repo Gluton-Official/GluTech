@@ -1,0 +1,14 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"ingredients": [
+		{ 
+			"item": "glutech:glutite_dust"
+		},
+		{
+			"item": "glutech:ancient_debris_powder" 
+		}
+	],
+	"result": {
+		"item": "glutech:glutite_ancient_debris_blend"
+	}
+}
