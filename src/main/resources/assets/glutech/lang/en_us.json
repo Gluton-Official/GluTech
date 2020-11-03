@@ -1,6 +1,10 @@
 {
 	"item.glutech.glutonium_ingot": "Glutonium Ingot",
 	"item.glutech.glutite": "Glutite",
+	"item.glutech.glutite_dust": "Glutite Dust",
+	"item.glutech.ancient_debris_powder": "Ancient Debris Powder",
+	"item.glutech.glutite_ancient_debris_blend": "Glutite Ancient Debris Blend",
+	
 	"item.glutech.glutonium_sword": "Glutonium Sword",
 	"item.glutech.glutonium_helmet": "Glutonium Helmet",
 	"item.glutech.glutonium_chestplate": "Glutonium Chestplate",

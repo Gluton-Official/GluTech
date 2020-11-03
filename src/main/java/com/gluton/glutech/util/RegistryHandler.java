@@ -34,6 +34,9 @@ public class RegistryHandler {
 	// Items
 	public static final RegistryObject<Item> GLUTONIUM_INGOT = ITEMS.register("glutonium_ingot", ItemBase::new);
 	public static final RegistryObject<Item> GLUTITE = ITEMS.register("glutite", ItemBase::new);
+	public static final RegistryObject<Item> GLUTITE_DUST = ITEMS.register("glutite_dust", ItemBase::new);
+	public static final RegistryObject<Item> ANCIENT_DEBRIS_POWDER = ITEMS.register("ancient_debris_powder", ItemBase::new);
+	public static final RegistryObject<Item> GLUTITE_ANCIENT_DEBRIS_BLEND = ITEMS.register("glutite_ancient_debris_blend", ItemBase::new);
 	
 	// Tools (attack speed defaults to 4)
 	public static final RegistryObject<SwordItem> GLUTONIUM_SWORD = ITEMS.register("glutonium_sword",
