@@ -1,0 +1,19 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"pattern": [
+		"g",
+		"g",
+		"i"
+	],
+	"key": {
+		"g": { 
+			"item": "glutech:glutonium_ingot"
+		},
+		"i": {
+			"tag": "forge:ingots/iron"
+		}
+	},
+	"result": {
+		"item": "glutech:glutonium_sword"
+	}
+}
