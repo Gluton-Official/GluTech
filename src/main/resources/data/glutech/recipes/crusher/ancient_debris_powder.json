@@ -1,0 +1,9 @@
+{ 
+	"type": "glutech:crusher",
+	"output": { 
+		"item": "glutech:ancient_debris_powder"
+	},
+	"input": { 
+		"tag": "forge:ores/netherite_scrap"
+	}
+}

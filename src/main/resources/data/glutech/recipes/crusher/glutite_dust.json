@@ -1,0 +1,9 @@
+{ 
+	"type": "glutech:crusher",
+	"output": { 
+		"item": "glutech:glutite_dust"
+	},
+	"input": { 
+		"item": "glutech:glutite"
+	}
+}
