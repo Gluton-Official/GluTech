@@ -13,6 +13,9 @@
 
 	"block.glutech.glutite_ore": "Glutite Ore",
 	"block.glutech.glutonium_block": "Glutonium Block",
+	"block.glutech.crusher": "Crusher",
+	
+	"container.glutech.crusher": "Crusher",
 
 	"itemGroup.glutech": "GluTech"
 }

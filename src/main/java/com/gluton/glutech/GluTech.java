@@ -3,9 +3,11 @@ package com.gluton.glutech;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.gluton.glutech.client.gui.CrusherScreen;
 import com.gluton.glutech.util.RegistryHandler;
 import com.gluton.glutech.world.gen.ModOreGen;
 
+import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.item.ItemGroup;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
@@ -37,10 +39,10 @@ public class GluTech {
 	}
 	
 	private void setup(final FMLCommonSetupEvent event) {
-//		ModOreGen.registerOres();
+
 	}
 	
 	private void doClientStuff(final FMLClientSetupEvent event) {
-		
+		ScreenManager.registerFactory(RegistryHandler.CRUSHER_CONTAINER.get(), CrusherScreen::new);
 	}
 }

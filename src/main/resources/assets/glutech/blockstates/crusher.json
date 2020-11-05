@@ -1,0 +1,13 @@
+{ 
+	"variants": { 
+		"facing=north,lit=false": { "model": "glutech:block/crusher" },
+		"facing=east,lit=false": { "model": "glutech:block/cruhser", "y": 90 },
+		"facing=south,lit=false": { "model": "glutech:block/crusher", "y": 180 },
+		"facing=west,lit=false": { "model": "glutech:block/crusher", "y": 270 },
+		
+		"facing=north,lit=true": { "model": "glutech:block/lit_crusher" },
+		"facing=east,lit=true": { "model": "glutech:block/lit_crusher", "y": 90 },
+		"facing=south,lit=true": { "model": "glutech:block/lit_crusher", "y": 180 },
+		"facing=west,lit=true": { "model": "glutech:block/lit_crusher", "y": 270 }
+	}
+}
