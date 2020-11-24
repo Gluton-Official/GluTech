@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.gluton.glutech.client.gui.CrusherScreen;
+import com.gluton.glutech.client.gui.SintererScreen;
 import com.gluton.glutech.util.RegistryHandler;
 import com.gluton.glutech.world.gen.ModOreGen;
 
@@ -44,5 +45,6 @@ public class GluTech {
 	
 	private void doClientStuff(final FMLClientSetupEvent event) {
 		ScreenManager.registerFactory(RegistryHandler.CRUSHER_CONTAINER.get(), CrusherScreen::new);
+		ScreenManager.registerFactory(RegistryHandler.SINTERER_CONTAINER.get(), SintererScreen::new);
 	}
 }

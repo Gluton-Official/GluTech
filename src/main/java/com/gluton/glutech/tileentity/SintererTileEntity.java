@@ -1,9 +1,9 @@
 package com.gluton.glutech.tileentity;
 
 import com.gluton.glutech.blocks.CrusherBlock;
-import com.gluton.glutech.container.CrusherContainer;
-import com.gluton.glutech.recipes.CrusherRecipe;
+import com.gluton.glutech.container.SintererContainer;
 import com.gluton.glutech.recipes.MachineRecipe;
+import com.gluton.glutech.recipes.SintererRecipe;
 import com.gluton.glutech.util.RegistryHandler;
 
 import net.minecraft.entity.player.PlayerEntity;
@@ -16,25 +16,25 @@ import net.minecraftforge.common.util.Constants;
 /**
  * @author Gluton
  */
-public class CrusherTileEntity extends MachineTileEntity<CrusherRecipe> {
-	
-	public CrusherTileEntity() {
-		super(RegistryHandler.CRUSHER.get(), "crusher", 2, 100);
+public class SintererTileEntity extends MachineTileEntity<SintererRecipe> {
+
+	public SintererTileEntity() {
+		super(RegistryHandler.SINTERER.get(), "sinterer", 3, 100);
 	}
 	
 	@Override
 	public Container createMenu(final int windowId, final PlayerInventory playerInv, final PlayerEntity playerIn) {
-		return new CrusherContainer(windowId, playerInv, this);
+		return new SintererContainer(windowId, playerInv, this);
 	}
-	
+
 	@Override
 	public void tick() {
 		boolean dirty = false;
 		
 		if (this.world != null && !this.world.isRemote) {
 			if (this.world.isBlockPowered(this.getPos())) {
-				CrusherRecipe recipe = this.getRecipe(this.inventory.getStackInSlot(0));
-				if (recipe != null && outputAvailable(recipe, this.inventory.getStackInSlot(1))) {
+				SintererRecipe recipe = this.getRecipe(this.inventory.getStackInSlot(0), this.inventory.getStackInSlot(1));
+				if (recipe != null && outputAvailable(recipe, this.inventory.getStackInSlot(2))) {
 					if (this.currentProcessTime != this.maxProcessTime) {
 						this.world.setBlockState(this.getPos(), this.getBlockState().with(CrusherBlock.ON, true));
 						this.currentProcessTime++;
@@ -42,9 +42,10 @@ public class CrusherTileEntity extends MachineTileEntity<CrusherRecipe> {
 					} else {
 						this.world.setBlockState(this.getPos(), this.getBlockState().with(CrusherBlock.ON, false));
 						this.currentProcessTime = 0;
-						ItemStack output = this.getRecipe(this.inventory.getStackInSlot(0)).getRecipeOutput();
-						this.inventory.insertItem(1, output.copy(), false);
+						ItemStack output = this.getRecipe(this.inventory.getStackInSlot(0), this.inventory.getStackInSlot(1)).getRecipeOutput();
+						this.inventory.insertItem(2, output.copy(), false);
 						this.inventory.decrStackSize(0, 1);
+						this.inventory.decrStackSize(1, 1);
 						dirty = true;
 					}
 				} else if (this.currentProcessTime != 0){
@@ -65,6 +66,6 @@ public class CrusherTileEntity extends MachineTileEntity<CrusherRecipe> {
 	
 	@Override
 	protected IRecipeType<MachineRecipe> getRecipeType() {
-		return RegistryHandler.CRUSHER_RECIPE_TYPE;
+		return RegistryHandler.SINTERER_RECIPE_TYPE;
 	}
 }

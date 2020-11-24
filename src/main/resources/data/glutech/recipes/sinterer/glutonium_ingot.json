@@ -1,0 +1,10 @@
+{ 
+	"type": "glutech:sinterer",
+	"inputs": [
+		{ "item": "glutech:glutite_dust" },
+		{ "item": "glutech:ancient_debris_powder" }
+	],
+	"output": { 
+		"item": "glutech:glutonium_ingot"
+	}
+}

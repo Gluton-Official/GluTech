@@ -16,11 +16,11 @@ import net.minecraft.util.registry.Registry;
 /**
  * @author Gluton
  */
-public class CrusherRecipe extends MachineRecipe {
+public class SintererRecipe extends MachineRecipe {
 	
-	public static final ResourceLocation RECIPE_ID = new ResourceLocation(GluTech.MOD_ID, "crusher");
-	
-	public CrusherRecipe(ResourceLocation id, NonNullList<Ingredient> ingredients, ItemStack output) {
+	public static final ResourceLocation RECIPE_ID = new ResourceLocation(GluTech.MOD_ID, "sinterer");
+
+	public SintererRecipe(ResourceLocation id, NonNullList<Ingredient> ingredients, ItemStack output) {
 		super(id, ingredients, output);
 	}
 	
@@ -29,9 +29,9 @@ public class CrusherRecipe extends MachineRecipe {
 	public IRecipeType<?> getType() {
 		return Registry.RECIPE_TYPE.getOptional(RECIPE_ID).get();
 	}
-	
+
 	@Override
 	public IRecipeSerializer<?> getSerializer() {
-		return RegistryHandler.CRUSHER_SERIALIZER.get();
+		return RegistryHandler.SINTERER_SERIALIZER.get();
 	}
 }

@@ -2,7 +2,7 @@ package com.gluton.glutech.blocks;
 
 import java.util.Random;
 
-import com.gluton.glutech.tileentity.CrusherTileEntity;
+import com.gluton.glutech.tileentity.SintererTileEntity;
 import com.gluton.glutech.util.MachineItemHandler;
 import com.gluton.glutech.util.RegistryHandler;
 
@@ -14,9 +14,6 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particles.ParticleTypes;
-import net.minecraft.state.BooleanProperty;
-import net.minecraft.state.DirectionProperty;
-import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
@@ -34,18 +31,15 @@ import net.minecraftforge.fml.network.NetworkHooks;
 /**
  * @author Gluton
  */
-public class CrusherBlock extends MachineBlock {
-	
-	public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
-	public static final BooleanProperty ON = BooleanProperty.create("on");
+public class SintererBlock extends MachineBlock {
 
-	public CrusherBlock() {
+	public SintererBlock() {
 		super();
 	}
-	
+
 	@Override
 	public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-		return RegistryHandler.CRUSHER.get().create();
+		return RegistryHandler.SINTERER.get().create();
 	}
 	
 	@Override
@@ -53,8 +47,8 @@ public class CrusherBlock extends MachineBlock {
 		super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
 		if (stack.hasDisplayName()) {
 			TileEntity tile = worldIn.getTileEntity(pos);
-			if (tile instanceof CrusherTileEntity) {
-				((CrusherTileEntity) tile).setCustomName(stack.getDisplayName());
+			if (tile instanceof SintererTileEntity) {
+				((SintererTileEntity) tile).setCustomName(stack.getDisplayName());
 			}
 		}
 	}
@@ -87,7 +81,7 @@ public class CrusherBlock extends MachineBlock {
 			Hand handIn, BlockRayTraceResult hit) {
 		if (worldIn != null && !worldIn.isRemote()) {
 			TileEntity tile = worldIn.getTileEntity(pos);
-			if (tile instanceof CrusherTileEntity) {
+			if (tile instanceof SintererTileEntity) {
 				NetworkHooks.openGui((ServerPlayerEntity) player, (INamedContainerProvider) tile, pos);
 				return ActionResultType.SUCCESS;
 			}
@@ -98,9 +92,9 @@ public class CrusherBlock extends MachineBlock {
 	@Override
 	public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
 		TileEntity tile = worldIn.getTileEntity(pos);
-		if (tile instanceof CrusherTileEntity && state.getBlock() != newState.getBlock()) {
-			CrusherTileEntity crusher = (CrusherTileEntity) tile;
-			((MachineItemHandler) crusher.getInventory()).toNonNullList().forEach(item -> {
+		if (tile instanceof SintererTileEntity && state.getBlock() != newState.getBlock()) {
+			SintererTileEntity sinterer = (SintererTileEntity) tile;
+			((MachineItemHandler) sinterer.getInventory()).toNonNullList().forEach(item -> {
 				ItemEntity itemEntity = new ItemEntity(worldIn, pos.getX(), pos.getY(), pos.getZ(), item);
 				worldIn.addEntity(itemEntity);
 			});

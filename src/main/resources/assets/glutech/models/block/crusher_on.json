@@ -1,7 +1,7 @@
 {
     "parent": "block/orientable",
     "textures": {
-        "front": "glutech:block/crusher",
+        "front": "glutech:block/crusher_on",
         "top": "glutech:block/machine_side",
         "side": "glutech:block/machine_side"
     }

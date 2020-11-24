@@ -1,0 +1,13 @@
+{ 
+	"variants": { 
+		"facing=north,on=false": { "model": "glutech:block/sinterer" },
+		"facing=east,on=false": { "model": "glutech:block/sinterer", "y": 90 },
+		"facing=south,on=false": { "model": "glutech:block/sinterer", "y": 180 },
+		"facing=west,on=false": { "model": "glutech:block/sinterer", "y": 270 },
+		
+		"facing=north,on=true": { "model": "glutech:block/sinterer_on" },
+		"facing=east,on=true": { "model": "glutech:block/sinterer_on", "y": 90 },
+		"facing=south,on=true": { "model": "glutech:block/sinterer_on", "y": 180 },
+		"facing=west,on=true": { "model": "glutech:block/sinterer_on", "y": 270 }
+	}
+}

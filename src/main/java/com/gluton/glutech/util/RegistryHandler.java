@@ -6,11 +6,18 @@ import com.gluton.glutech.blocks.BlockItemBase;
 import com.gluton.glutech.blocks.CrusherBlock;
 import com.gluton.glutech.blocks.GlutiteOre;
 import com.gluton.glutech.blocks.GlutoniumBlock;
+import com.gluton.glutech.blocks.SintererBlock;
 import com.gluton.glutech.container.CrusherContainer;
+import com.gluton.glutech.container.SintererContainer;
 import com.gluton.glutech.items.ItemBase;
-import com.gluton.glutech.recipes.CrusherRecipeSerializer;
-import com.gluton.glutech.recipes.IMachineRecipe;
+import com.gluton.glutech.recipes.CrusherRecipe;
+import com.gluton.glutech.recipes.MachineRecipe;
+import com.gluton.glutech.recipes.SintererRecipe;
+import com.gluton.glutech.recipes.serializers.CrusherRecipeSerializer;
+import com.gluton.glutech.recipes.serializers.MachineRecipeSerializer;
+import com.gluton.glutech.recipes.serializers.SintererRecipeSerializer;
 import com.gluton.glutech.tileentity.CrusherTileEntity;
+import com.gluton.glutech.tileentity.SintererTileEntity;
 import com.gluton.glutech.tools.ModToolMaterial;
 
 import net.minecraft.block.Block;
@@ -78,24 +85,31 @@ public class RegistryHandler {
 	public static final RegistryObject<Block> GLUTONIUM_BLOCK = BLOCKS.register("glutonium_block", GlutoniumBlock::new);
 	public static final RegistryObject<Block> GLUTITE_ORE = BLOCKS.register("glutite_ore", GlutiteOre::new);
 	public static final RegistryObject<Block> CRUSHER_BLOCK = BLOCKS.register("crusher", CrusherBlock::new);
+	public static final RegistryObject<Block> SINTERER_BLOCK = BLOCKS.register("sinterer", SintererBlock::new);
 	
 	// Block Items
 	public static final RegistryObject<Item> GLUTONIUM_BLOCK_ITEM = ITEMS.register("glutonium_block", () -> new BlockItemBase(GLUTONIUM_BLOCK.get()));
 	public static final RegistryObject<Item> GLUTITE_ORE_ITEM = ITEMS.register("glutite_ore", () -> new BlockItemBase(GLUTITE_ORE.get()));
 	public static final RegistryObject<Item> CRUSHER_ITEM = ITEMS.register("crusher", () -> new BlockItemBase(CRUSHER_BLOCK.get()));
+	public static final RegistryObject<Item> SINTERER_ITEM = ITEMS.register("sinterer", () -> new BlockItemBase(SINTERER_BLOCK.get())); 
 	
 	// Tile Entities
 	public static final RegistryObject<TileEntityType<CrusherTileEntity>> CRUSHER = TILE_ENTITIES.register("crusher",
-			()  -> TileEntityType.Builder.create(CrusherTileEntity::new, CRUSHER_BLOCK.get()).build(null));
+			() -> TileEntityType.Builder.create(CrusherTileEntity::new, CRUSHER_BLOCK.get()).build(null));
+	public static final RegistryObject<TileEntityType<SintererTileEntity>> SINTERER = TILE_ENTITIES.register("sinterer",
+			() -> TileEntityType.Builder.create(SintererTileEntity::new, SINTERER_BLOCK.get()).build(null));
 	
 	// Containers
 	public static final RegistryObject<ContainerType<CrusherContainer>> CRUSHER_CONTAINER = CONTAINERS.register("crusher",
 			() -> IForgeContainerType.create(CrusherContainer::new));
+	public static final RegistryObject<ContainerType<SintererContainer>> SINTERER_CONTAINER = CONTAINERS.register("sinterer",
+			() -> IForgeContainerType.create(SintererContainer::new));
 	
 	// Recipe Serializers
-	public static final RegistryObject<CrusherRecipeSerializer> CRUSHER_SERIALIZER = RECIPE_SERIALIZERS.register("crusher", CrusherRecipeSerializer::new);
-	public static final IRecipeType<IMachineRecipe> MACHINE_TYPE = registerType(IMachineRecipe.RECIPE_TYPE_ID);
-	
+	public static final RegistryObject<MachineRecipeSerializer<CrusherRecipe>> CRUSHER_SERIALIZER = RECIPE_SERIALIZERS.register("crusher", CrusherRecipeSerializer::new);
+	public static final IRecipeType<MachineRecipe> CRUSHER_RECIPE_TYPE = registerType(CrusherRecipe.RECIPE_ID);
+	public static final RegistryObject<MachineRecipeSerializer<SintererRecipe>> SINTERER_SERIALIZER = RECIPE_SERIALIZERS.register("sinterer", SintererRecipeSerializer::new);
+	public static final IRecipeType<MachineRecipe> SINTERER_RECIPE_TYPE = registerType(SintererRecipe.RECIPE_ID);
 	
 	private static class RecipeType<T extends IRecipe<?>> implements IRecipeType<T> {
 		@Override

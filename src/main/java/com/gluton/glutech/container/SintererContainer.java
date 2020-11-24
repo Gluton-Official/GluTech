@@ -3,7 +3,7 @@ package com.gluton.glutech.container;
 import java.util.Objects;
 
 import com.gluton.glutech.container.slot.ResultSlot;
-import com.gluton.glutech.tileentity.CrusherTileEntity;
+import com.gluton.glutech.tileentity.SintererTileEntity;
 import com.gluton.glutech.util.FunctionalIntReferenceHolder;
 import com.gluton.glutech.util.RegistryHandler;
 
@@ -20,15 +20,15 @@ import net.minecraftforge.items.SlotItemHandler;
 /**
  * @author Gluton
  */
-public class CrusherContainer extends MachineContainer {
+public class SintererContainer extends MachineContainer {
 	
-	private CrusherTileEntity tileEntity;
+	private SintererTileEntity tileEntity;
 	private IWorldPosCallable canInteractWithCallable;
 	public FunctionalIntReferenceHolder currentProcessTime;
 
 	// Server
-	public CrusherContainer(final int windowId, final PlayerInventory playerInv, final CrusherTileEntity tile) {
-		super(RegistryHandler.CRUSHER_CONTAINER.get(), windowId, 2, 29);
+	public SintererContainer(final int windowId, final PlayerInventory playerInv, final SintererTileEntity tile) {
+		super(RegistryHandler.SINTERER_CONTAINER.get(), windowId, 3, 30);
 		
 		this.tileEntity = tile;
 		this.canInteractWithCallable = IWorldPosCallable.of(tile.getWorld(), tile.getPos());
@@ -37,8 +37,9 @@ public class CrusherContainer extends MachineContainer {
 		final int startX = 8;
 		
 		// Crusher slots
-		this.addSlot(new SlotItemHandler(tile.getInventory(), 0, 56, 35));
-		this.addSlot(new ResultSlot(tile.getInventory(), 1, 116, 35));
+		this.addSlot(new SlotItemHandler(tile.getInventory(), 0, 56, 25));
+		this.addSlot(new SlotItemHandler(tile.getInventory(), 1, 56, 25 + slotSizePlus2));
+		this.addSlot(new ResultSlot(tile.getInventory(), 2, 116, 35));
 		
 		// Main player inventory
 		final int startY = 84;
@@ -58,27 +59,27 @@ public class CrusherContainer extends MachineContainer {
 		this.trackInt(currentProcessTime = new FunctionalIntReferenceHolder(() -> this.tileEntity.currentProcessTime,
 				value -> this.tileEntity.currentProcessTime = value));
 	}
-
-	// Client
-	public CrusherContainer(final int windowId, final PlayerInventory playerInv, final PacketBuffer data) {
-		this(windowId, playerInv, getTileEntity(playerInv, data));
-	}
 	
-	private static CrusherTileEntity getTileEntity(final PlayerInventory playerInv, final PacketBuffer data) {
-		Objects.requireNonNull(playerInv, "playerInv cannot be null");
-		Objects.requireNonNull(data, "data cannot be null");
-		final TileEntity tileAtPos = playerInv.player.world.getTileEntity(data.readBlockPos());
-		if (!(tileAtPos instanceof CrusherTileEntity)) {
-			throw new IllegalStateException("TileEntity is not correct " + tileAtPos);
-		}
-		return (CrusherTileEntity) tileAtPos;
+	// Client
+	public SintererContainer(final int windowId, final PlayerInventory playerInv, final PacketBuffer data) {
+		this(windowId, playerInv, getTileEntity(playerInv, data));
 	}
 	
 	@Override
 	public boolean canInteractWith(PlayerEntity playerIn) {
-		return isWithinUsableDistance(canInteractWithCallable, playerIn, RegistryHandler.CRUSHER_BLOCK.get());
+		return isWithinUsableDistance(canInteractWithCallable, playerIn, RegistryHandler.SINTERER_BLOCK.get());
 	}
-	
+
+	private static SintererTileEntity getTileEntity(final PlayerInventory playerInv, final PacketBuffer data) {
+		Objects.requireNonNull(playerInv, "playerInv cannot be null");
+		Objects.requireNonNull(data, "data cannot be null");
+		final TileEntity tileAtPos = playerInv.player.world.getTileEntity(data.readBlockPos());
+		if (!(tileAtPos instanceof SintererTileEntity)) {
+			throw new IllegalStateException("TileEntity is not correct " + tileAtPos);
+		}
+		return (SintererTileEntity) tileAtPos;
+	}
+
 	@OnlyIn(Dist.CLIENT)
 	@Override
 	public int getSmeltProgressionScaled() {
