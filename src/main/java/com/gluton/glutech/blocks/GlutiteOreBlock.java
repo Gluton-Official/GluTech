@@ -13,9 +13,9 @@ import net.minecraftforge.common.ToolType;
 /**
  * @author Gluton
  */
-public class GlutiteOre extends OreBlock {
+public class GlutiteOreBlock extends OreBlock {
 
-	public GlutiteOre() {
+	public GlutiteOreBlock() {
 		super(Block.Properties.create(Material.ROCK)
 				.sound(SoundType.STONE)
 				.hardnessAndResistance(3.0f, 4.0f)

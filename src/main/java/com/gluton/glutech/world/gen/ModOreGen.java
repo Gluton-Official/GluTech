@@ -29,7 +29,7 @@ public class ModOreGen {
 		if (event.getCategory() == Biome.Category.THEEND && !event.getName().equals(Biomes.THE_END.getLocation())) {
 			generation.withFeature(GenerationStage.Decoration.UNDERGROUND_ORES,
 					Feature.NO_SURFACE_ORE.withConfiguration(new OreFeatureConfig(new BlockMatchRuleTest(Blocks.END_STONE),
-					RegistryHandler.GLUTITE_ORE.get().getDefaultState(), /*vein size*/ 2)).range(128).square().func_242731_b(/*frequency*/ 16));
+					RegistryHandler.GLUTITE_ORE_BLOCK.get().getDefaultState(), /*vein size*/ 2)).range(128).square().func_242731_b(/*frequency*/ 16));
 		}
 	}
 }

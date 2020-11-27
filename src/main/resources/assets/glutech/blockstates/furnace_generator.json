@@ -1,0 +1,13 @@
+{ 
+	"variants": { 
+		"facing=north,on=false": { "model": "glutech:block/furnace_generator" },
+		"facing=east,on=false": { "model": "glutech:block/furnace_generator", "y": 90 },
+		"facing=south,on=false": { "model": "glutech:block/furnace_generator", "y": 180 },
+		"facing=west,on=false": { "model": "glutech:block/furnace_generator", "y": 270 },
+		
+		"facing=north,on=true": { "model": "glutech:block/furnace_generator_on" },
+		"facing=east,on=true": { "model": "glutech:block/furnace_generator_on", "y": 90 },
+		"facing=south,on=true": { "model": "glutech:block/furnace_generator_on", "y": 180 },
+		"facing=west,on=true": { "model": "glutech:block/furnace_generator_on", "y": 270 }
+	}
+}

@@ -1,0 +1,8 @@
+{
+    "parent": "block/orientable",
+    "textures": {
+        "front": "glutech:block/furnace_generator_on",
+        "top": "glutech:block/machine_side",
+        "side": "glutech:block/machine_side"
+    }
+}

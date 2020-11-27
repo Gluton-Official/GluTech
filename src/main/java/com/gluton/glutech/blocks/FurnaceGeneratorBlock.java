@@ -2,7 +2,7 @@ package com.gluton.glutech.blocks;
 
 import java.util.Random;
 
-import com.gluton.glutech.tileentity.CrusherTileEntity;
+import com.gluton.glutech.tileentity.FurnaceGeneratorTileEntity;
 import com.gluton.glutech.util.MachineItemHandler;
 import com.gluton.glutech.util.RegistryHandler;
 
@@ -31,15 +31,15 @@ import net.minecraftforge.fml.network.NetworkHooks;
 /**
  * @author Gluton
  */
-public class CrusherBlock extends MachineBlock {
+public class FurnaceGeneratorBlock extends MachineBlock {
 	
-	public CrusherBlock() {
+	public FurnaceGeneratorBlock() {
 		super();
 	}
-	
+
 	@Override
 	public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-		return RegistryHandler.CRUSHER.get().create();
+		return RegistryHandler.FURNACE_GENERATOR.get().create();
 	}
 	
 	@Override
@@ -47,8 +47,8 @@ public class CrusherBlock extends MachineBlock {
 		super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
 		if (stack.hasDisplayName()) {
 			TileEntity tile = worldIn.getTileEntity(pos);
-			if (tile instanceof CrusherTileEntity) {
-				((CrusherTileEntity) tile).setCustomName(stack.getDisplayName());
+			if (tile instanceof FurnaceGeneratorTileEntity) {
+				((FurnaceGeneratorTileEntity) tile).setCustomName(stack.getDisplayName());
 			}
 		}
 	}
@@ -75,26 +75,26 @@ public class CrusherBlock extends MachineBlock {
 			worldIn.addParticle(ParticleTypes.FLAME, d0 + d5, d1 + d6, d2 + d7, 0.0D, 0.0D, 0.0D);
 		}
 	}
-	
+
 	@Override
 	public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player,
 			Hand handIn, BlockRayTraceResult hit) {
 		if (worldIn != null && !worldIn.isRemote()) {
 			TileEntity tile = worldIn.getTileEntity(pos);
-			if (tile instanceof CrusherTileEntity) {
+			if (tile instanceof FurnaceGeneratorTileEntity) {
 				NetworkHooks.openGui((ServerPlayerEntity) player, (INamedContainerProvider) tile, pos);
 				return ActionResultType.SUCCESS;
 			}
 		}
 		return ActionResultType.SUCCESS;
 	}
-	
+
 	@Override
 	public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
 		TileEntity tile = worldIn.getTileEntity(pos);
-		if (tile instanceof CrusherTileEntity && state.getBlock() != newState.getBlock()) {
-			CrusherTileEntity crusher = (CrusherTileEntity) tile;
-			((MachineItemHandler) crusher.getInventory()).toNonNullList().forEach(item -> {
+		if (tile instanceof FurnaceGeneratorTileEntity && state.getBlock() != newState.getBlock()) {
+			FurnaceGeneratorTileEntity furnaceGenerator = (FurnaceGeneratorTileEntity) tile;
+			((MachineItemHandler) furnaceGenerator.getInventory()).toNonNullList().forEach(item -> {
 				ItemEntity itemEntity = new ItemEntity(worldIn, pos.getX(), pos.getY(), pos.getZ(), item);
 				worldIn.addEntity(itemEntity);
 			});

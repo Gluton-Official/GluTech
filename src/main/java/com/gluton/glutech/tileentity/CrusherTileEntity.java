@@ -1,6 +1,6 @@
 package com.gluton.glutech.tileentity;
 
-import com.gluton.glutech.blocks.CrusherBlock;
+import com.gluton.glutech.blocks.MachineBlock;
 import com.gluton.glutech.container.CrusherContainer;
 import com.gluton.glutech.recipes.CrusherRecipe;
 import com.gluton.glutech.recipes.MachineRecipe;
@@ -19,7 +19,7 @@ import net.minecraftforge.common.util.Constants;
 public class CrusherTileEntity extends MachineTileEntity<CrusherRecipe> {
 	
 	public CrusherTileEntity() {
-		super(RegistryHandler.CRUSHER.get(), "crusher", 2, 100);
+		super(RegistryHandler.CRUSHER.get(), "crusher", CrusherContainer.SLOTS, 100);
 	}
 	
 	@Override
@@ -35,25 +35,25 @@ public class CrusherTileEntity extends MachineTileEntity<CrusherRecipe> {
 			if (this.world.isBlockPowered(this.getPos())) {
 				CrusherRecipe recipe = this.getRecipe(this.inventory.getStackInSlot(0));
 				if (recipe != null && outputAvailable(recipe, this.inventory.getStackInSlot(1))) {
-					if (this.currentProcessTime != this.maxProcessTime) {
-						this.world.setBlockState(this.getPos(), this.getBlockState().with(CrusherBlock.ON, true));
+					if (this.currentProcessTime < this.maxProcessTime) {
+						this.world.setBlockState(this.getPos(), this.getBlockState().with(MachineBlock.ON, true));
 						this.currentProcessTime++;
 						dirty = true;
 					} else {
-						this.world.setBlockState(this.getPos(), this.getBlockState().with(CrusherBlock.ON, false));
+						this.world.setBlockState(this.getPos(), this.getBlockState().with(MachineBlock.ON, false));
 						this.currentProcessTime = 0;
 						ItemStack output = this.getRecipe(this.inventory.getStackInSlot(0)).getRecipeOutput();
 						this.inventory.insertItem(1, output.copy(), false);
 						this.inventory.decrStackSize(0, 1);
 						dirty = true;
 					}
-				} else if (this.currentProcessTime != 0){
+				} else if (this.currentProcessTime != 0) {
 					this.currentProcessTime = 0;
-					this.world.setBlockState(this.getPos(), this.getBlockState().with(CrusherBlock.ON, false));
+					this.world.setBlockState(this.getPos(), this.getBlockState().with(MachineBlock.ON, false));
 				}
 			} else if (this.currentProcessTime != 0) {
 				this.currentProcessTime = 0;
-				this.world.setBlockState(this.getPos(), this.getBlockState().with(CrusherBlock.ON, false));
+				this.world.setBlockState(this.getPos(), this.getBlockState().with(MachineBlock.ON, false));
 			}
 		}
 		

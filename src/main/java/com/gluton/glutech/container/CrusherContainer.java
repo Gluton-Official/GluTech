@@ -9,7 +9,6 @@ import com.gluton.glutech.util.RegistryHandler;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Slot;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IWorldPosCallable;
@@ -25,35 +24,20 @@ public class CrusherContainer extends MachineContainer {
 	private CrusherTileEntity tileEntity;
 	private IWorldPosCallable canInteractWithCallable;
 	public FunctionalIntReferenceHolder currentProcessTime;
+	
+	public static final int SLOTS = 2;
 
 	// Server
 	public CrusherContainer(final int windowId, final PlayerInventory playerInv, final CrusherTileEntity tile) {
-		super(RegistryHandler.CRUSHER_CONTAINER.get(), windowId, 2, 29);
+		super(RegistryHandler.CRUSHER_CONTAINER.get(), windowId, SLOTS);
 		
 		this.tileEntity = tile;
 		this.canInteractWithCallable = IWorldPosCallable.of(tile.getWorld(), tile.getPos());
-		
-		final int slotSizePlus2 = 18;
-		final int startX = 8;
-		
-		// Crusher slots
+
 		this.addSlot(new SlotItemHandler(tile.getInventory(), 0, 56, 35));
 		this.addSlot(new ResultSlot(tile.getInventory(), 1, 116, 35));
 		
-		// Main player inventory
-		final int startY = 84;
-		
-		for (int row = 0; row < 3; row++) {
-			for (int column = 0; column < 9; column++) {
-				this.addSlot(new Slot(playerInv, 9 + row * 9 + column, startX + (column * slotSizePlus2), startY + (row * slotSizePlus2)));
-			}
-		}
-		
-		// Hotbar
-		int hotbarY = 142;
-		for (int column = 0; column < 9; column++) {
-			this.addSlot(new Slot(playerInv, column, startX + (column * slotSizePlus2), hotbarY));
-		}
+		this.addPlayerInventory(playerInv);
 		
 		this.trackInt(currentProcessTime = new FunctionalIntReferenceHolder(() -> this.tileEntity.currentProcessTime,
 				value -> this.tileEntity.currentProcessTime = value));

@@ -4,10 +4,12 @@ import com.gluton.glutech.GluTech;
 import com.gluton.glutech.armor.ModArmorMaterial;
 import com.gluton.glutech.blocks.BlockItemBase;
 import com.gluton.glutech.blocks.CrusherBlock;
-import com.gluton.glutech.blocks.GlutiteOre;
+import com.gluton.glutech.blocks.FurnaceGeneratorBlock;
+import com.gluton.glutech.blocks.GlutiteOreBlock;
 import com.gluton.glutech.blocks.GlutoniumBlock;
 import com.gluton.glutech.blocks.SintererBlock;
 import com.gluton.glutech.container.CrusherContainer;
+import com.gluton.glutech.container.FurnaceGeneratorContainer;
 import com.gluton.glutech.container.SintererContainer;
 import com.gluton.glutech.items.ItemBase;
 import com.gluton.glutech.recipes.CrusherRecipe;
@@ -17,6 +19,7 @@ import com.gluton.glutech.recipes.serializers.CrusherRecipeSerializer;
 import com.gluton.glutech.recipes.serializers.MachineRecipeSerializer;
 import com.gluton.glutech.recipes.serializers.SintererRecipeSerializer;
 import com.gluton.glutech.tileentity.CrusherTileEntity;
+import com.gluton.glutech.tileentity.FurnaceGeneratorTileEntity;
 import com.gluton.glutech.tileentity.SintererTileEntity;
 import com.gluton.glutech.tools.ModToolMaterial;
 
@@ -83,23 +86,29 @@ public class RegistryHandler {
 	
 	// Blocks
 	public static final RegistryObject<Block> GLUTONIUM_BLOCK = BLOCKS.register("glutonium_block", GlutoniumBlock::new);
-	public static final RegistryObject<Block> GLUTITE_ORE = BLOCKS.register("glutite_ore", GlutiteOre::new);
+	public static final RegistryObject<Block> GLUTITE_ORE_BLOCK = BLOCKS.register("glutite_ore", GlutiteOreBlock::new);
+	public static final RegistryObject<Block> FURNACE_GENERATOR_BLOCK = BLOCKS.register("furnace_generator", FurnaceGeneratorBlock::new);
 	public static final RegistryObject<Block> CRUSHER_BLOCK = BLOCKS.register("crusher", CrusherBlock::new);
 	public static final RegistryObject<Block> SINTERER_BLOCK = BLOCKS.register("sinterer", SintererBlock::new);
 	
 	// Block Items
 	public static final RegistryObject<Item> GLUTONIUM_BLOCK_ITEM = ITEMS.register("glutonium_block", () -> new BlockItemBase(GLUTONIUM_BLOCK.get()));
-	public static final RegistryObject<Item> GLUTITE_ORE_ITEM = ITEMS.register("glutite_ore", () -> new BlockItemBase(GLUTITE_ORE.get()));
+	public static final RegistryObject<Item> GLUTITE_ORE_ITEM = ITEMS.register("glutite_ore", () -> new BlockItemBase(GLUTITE_ORE_BLOCK.get()));
+	public static final RegistryObject<Item> FURNACE_GENERATOR_ITEM = ITEMS.register("furnace_generator", () -> new BlockItemBase(FURNACE_GENERATOR_BLOCK.get())); 
 	public static final RegistryObject<Item> CRUSHER_ITEM = ITEMS.register("crusher", () -> new BlockItemBase(CRUSHER_BLOCK.get()));
 	public static final RegistryObject<Item> SINTERER_ITEM = ITEMS.register("sinterer", () -> new BlockItemBase(SINTERER_BLOCK.get())); 
 	
 	// Tile Entities
+	public static final RegistryObject<TileEntityType<FurnaceGeneratorTileEntity>> FURNACE_GENERATOR = TILE_ENTITIES.register("furnace_generator",
+			() -> TileEntityType.Builder.create(FurnaceGeneratorTileEntity::new, FURNACE_GENERATOR_BLOCK.get()).build(null));
 	public static final RegistryObject<TileEntityType<CrusherTileEntity>> CRUSHER = TILE_ENTITIES.register("crusher",
 			() -> TileEntityType.Builder.create(CrusherTileEntity::new, CRUSHER_BLOCK.get()).build(null));
 	public static final RegistryObject<TileEntityType<SintererTileEntity>> SINTERER = TILE_ENTITIES.register("sinterer",
 			() -> TileEntityType.Builder.create(SintererTileEntity::new, SINTERER_BLOCK.get()).build(null));
 	
 	// Containers
+	public static final RegistryObject<ContainerType<FurnaceGeneratorContainer>> FURNACE_GENERATOR_CONTAINER = CONTAINERS.register("furnace_generator",
+			() -> IForgeContainerType.create(FurnaceGeneratorContainer::new));
 	public static final RegistryObject<ContainerType<CrusherContainer>> CRUSHER_CONTAINER = CONTAINERS.register("crusher",
 			() -> IForgeContainerType.create(CrusherContainer::new));
 	public static final RegistryObject<ContainerType<SintererContainer>> SINTERER_CONTAINER = CONTAINERS.register("sinterer",
