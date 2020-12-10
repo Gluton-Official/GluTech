@@ -9,7 +9,6 @@ import net.minecraft.item.ItemStack;
 
 /**
  * @author Gluton
- *
  */
 public abstract class MachineContainer extends Container {
 	

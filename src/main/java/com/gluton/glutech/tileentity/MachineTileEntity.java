@@ -44,7 +44,6 @@ import net.minecraftforge.items.wrapper.RecipeWrapper;
 
 /**
  * @author Gluton
- *
  */
 public abstract class MachineTileEntity<R extends MachineRecipe> extends TileEntity implements ITickableTileEntity, INamedContainerProvider {
 
