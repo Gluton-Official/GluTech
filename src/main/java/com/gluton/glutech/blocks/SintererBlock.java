@@ -57,22 +57,23 @@ public class SintererBlock extends MachineBlock {
 	@OnlyIn(Dist.CLIENT)
 	public void animateTick(BlockState stateIn, World worldIn, BlockPos pos, Random rand) {
 		if (stateIn.get(ON)) {
-			double d0 = (double) pos.getX() + 0.5D;
-			double d1 = (double) pos.getY();
-			double d2 = (double) pos.getZ() + 0.5D;
+			// Sound
+			double x = (double) pos.getX() + 0.5D;
+			double y = (double) pos.getY();
+			double z = (double) pos.getZ() + 0.5D;
 			if (rand.nextDouble() < 0.1D) {
-				worldIn.playSound(d0, d1, d2, SoundEvents.BLOCK_FURNACE_FIRE_CRACKLE, SoundCategory.BLOCKS, 1.0F, 1.0F,
-						false);
+				worldIn.playSound(x, y, z, SoundEvents.BLOCK_FURNACE_FIRE_CRACKLE, SoundCategory.BLOCKS, 1.0F, 1.0F, false);
 			}
 
+			// Particles
 			Direction direction = stateIn.get(FACING);
-			Direction.Axis direction$axis = direction.getAxis();
-			double d4 = rand.nextDouble() * 0.6D - 0.3D;
-			double d5 = direction$axis == Direction.Axis.X ? (double) direction.getXOffset() * 0.52D : d4;
-			double d6 = rand.nextDouble() * 6.0D / 16.0D;
-			double d7 = direction$axis == Direction.Axis.Z ? (double) direction.getZOffset() * 0.52D : d4;
-			worldIn.addParticle(ParticleTypes.SMOKE, d0 + d5, d1 + d6, d2 + d7, 0.0D, 0.0D, 0.0D);
-			worldIn.addParticle(ParticleTypes.FLAME, d0 + d5, d1 + d6, d2 + d7, 0.0D, 0.0D, 0.0D);
+			Direction.Axis axis = direction.getAxis();
+			double lateralOffset = rand.nextDouble() * 0.6D - 0.3D;
+			double xOffset = axis == Direction.Axis.X ? (double) direction.getXOffset() * 0.52D : lateralOffset;
+			double yOffset = rand.nextDouble() * 6.0D / 16.0D;
+			double zOffset = axis == Direction.Axis.Z ? (double) direction.getZOffset() * 0.52D : lateralOffset;
+			worldIn.addParticle(ParticleTypes.SMOKE, x + xOffset, y + yOffset, z + zOffset, 0.0D, 0.0D, 0.0D);
+			worldIn.addParticle(ParticleTypes.FLAME, x + xOffset, y + yOffset, z + zOffset, 0.0D, 0.0D, 0.0D);
 		}
 	}
 	
