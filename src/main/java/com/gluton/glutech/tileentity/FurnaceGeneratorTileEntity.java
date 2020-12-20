@@ -13,6 +13,8 @@ import net.minecraft.inventory.container.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Direction;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.ForgeHooks;
@@ -37,7 +39,7 @@ public class FurnaceGeneratorTileEntity extends MachineTileEntity<MachineRecipe>
 		
 		this.fuelBurnTime = 0;
 		
-		this.capacity = 32000;
+		this.capacity = 10000;
 		this.maxExtract = 1000;
 	}
 	
@@ -65,11 +67,37 @@ public class FurnaceGeneratorTileEntity extends MachineTileEntity<MachineRecipe>
 				this.inventory.decrStackSize(0, 1);
 				this.world.setBlockState(this.getPos(), this.getBlockState().with(FurnaceGeneratorBlock.ON, true));
 				dirty = true;
-				
 			} else if (this.fuelBurnTime != 0) {
 				this.fuelBurnTime = 0;
 				this.world.setBlockState(this.getPos(), this.getBlockState().with(FurnaceGeneratorBlock.ON, false));
 				dirty = true;
+			}
+			
+			if (this.energy > 0) {
+				for (Direction side : Direction.values()) {
+					TileEntity tile = this.world.getTileEntity(this.pos.offset(side));
+					if (tile != null) {
+						if (tile instanceof EnergyCellTileEntity) {
+							EnergyCellTileEntity energyTile = (EnergyCellTileEntity) tile;
+							if (energyTile.canReceiveFromFace(side.getOpposite())) {
+								int energyToTransfer = this.extractEnergy(this.maxExtract, true);
+								int energyTransfered = energyTile.receiveEnergy(energyToTransfer, false);
+								if (energyTransfered > 0) {
+									this.energy -= energyTransfered;
+									dirty = true;
+								}
+							}
+						} else if (tile instanceof CrusherTileEntity) {
+							CrusherTileEntity energyTile = (CrusherTileEntity) tile;
+							this.extractEnergy(this.maxExtract, false);
+							
+							int energyToTransfer = this.extractEnergy(this.maxExtract, true);
+							int energyTransfered = energyTile.receiveEnergy(energyToTransfer, false);
+							this.energy -= energyTransfered;
+							dirty = true;
+						}
+					}
+				}
 			}
 		}
 		
@@ -90,21 +118,21 @@ public class FurnaceGeneratorTileEntity extends MachineTileEntity<MachineRecipe>
 			return 0;
 		}
 		
-		int energyExtracted = Math.min(energy, Math.min(this.maxExtract, maxExtract));
+		int energyExtracted = Math.min(this.energy, Math.min(this.maxExtract, maxExtract));
 		if (!simulate) {
-			energy -= energyExtracted;
+			this.energy -= energyExtracted;
 		}
 		return energyExtracted;
 	}
 	
 	@Override
 	public int getEnergyStored() {
-		return energy;
+		return this.energy;
 	}
 	
 	@Override
 	public int getMaxEnergyStored() {
-		return capacity;
+		return this.capacity;
 	}
 	
 	@Override

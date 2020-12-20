@@ -1,0 +1,6 @@
+{
+	"variants": {
+		"on=false": { "model": "glutech:block/energy_cell" },
+		"on=true": { "model": "glutech:block/energy_cell_on" }
+	}
+}

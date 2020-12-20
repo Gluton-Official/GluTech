@@ -4,6 +4,7 @@ import com.gluton.glutech.GluTech;
 import com.gluton.glutech.armor.ModArmorMaterial;
 import com.gluton.glutech.blocks.BlockItemBase;
 import com.gluton.glutech.blocks.CrusherBlock;
+import com.gluton.glutech.blocks.EnergyCellBlock;
 import com.gluton.glutech.blocks.FurnaceGeneratorBlock;
 import com.gluton.glutech.blocks.GlutiteOreBlock;
 import com.gluton.glutech.blocks.GlutoniumBlock;
@@ -19,6 +20,7 @@ import com.gluton.glutech.recipes.serializers.CrusherRecipeSerializer;
 import com.gluton.glutech.recipes.serializers.MachineRecipeSerializer;
 import com.gluton.glutech.recipes.serializers.SintererRecipeSerializer;
 import com.gluton.glutech.tileentity.CrusherTileEntity;
+import com.gluton.glutech.tileentity.EnergyCellTileEntity;
 import com.gluton.glutech.tileentity.FurnaceGeneratorTileEntity;
 import com.gluton.glutech.tileentity.SintererTileEntity;
 import com.gluton.glutech.tools.ModToolMaterial;
@@ -87,6 +89,7 @@ public class RegistryHandler {
 	// Blocks
 	public static final RegistryObject<Block> GLUTONIUM_BLOCK = BLOCKS.register("glutonium_block", GlutoniumBlock::new);
 	public static final RegistryObject<Block> GLUTITE_ORE_BLOCK = BLOCKS.register("glutite_ore", GlutiteOreBlock::new);
+	public static final RegistryObject<Block> ENERGY_CELL_BLOCK = BLOCKS.register("energy_cell", EnergyCellBlock::new);
 	public static final RegistryObject<Block> FURNACE_GENERATOR_BLOCK = BLOCKS.register("furnace_generator", FurnaceGeneratorBlock::new);
 	public static final RegistryObject<Block> CRUSHER_BLOCK = BLOCKS.register("crusher", CrusherBlock::new);
 	public static final RegistryObject<Block> SINTERER_BLOCK = BLOCKS.register("sinterer", SintererBlock::new);
@@ -94,11 +97,14 @@ public class RegistryHandler {
 	// Block Items
 	public static final RegistryObject<Item> GLUTONIUM_BLOCK_ITEM = ITEMS.register("glutonium_block", () -> new BlockItemBase(GLUTONIUM_BLOCK.get()));
 	public static final RegistryObject<Item> GLUTITE_ORE_ITEM = ITEMS.register("glutite_ore", () -> new BlockItemBase(GLUTITE_ORE_BLOCK.get()));
+	public static final RegistryObject<Item> ENERGY_CELL_ITEM = ITEMS.register("energy_cell", () -> new BlockItemBase(ENERGY_CELL_BLOCK.get()));
 	public static final RegistryObject<Item> FURNACE_GENERATOR_ITEM = ITEMS.register("furnace_generator", () -> new BlockItemBase(FURNACE_GENERATOR_BLOCK.get())); 
 	public static final RegistryObject<Item> CRUSHER_ITEM = ITEMS.register("crusher", () -> new BlockItemBase(CRUSHER_BLOCK.get()));
 	public static final RegistryObject<Item> SINTERER_ITEM = ITEMS.register("sinterer", () -> new BlockItemBase(SINTERER_BLOCK.get())); 
 	
 	// Tile Entities
+	public static final RegistryObject<TileEntityType<EnergyCellTileEntity>> ENERGY_CELL = TILE_ENTITIES.register("energy_cell", 
+			() -> TileEntityType.Builder.create(EnergyCellTileEntity::new, ENERGY_CELL_BLOCK.get()).build(null));
 	public static final RegistryObject<TileEntityType<FurnaceGeneratorTileEntity>> FURNACE_GENERATOR = TILE_ENTITIES.register("furnace_generator",
 			() -> TileEntityType.Builder.create(FurnaceGeneratorTileEntity::new, FURNACE_GENERATOR_BLOCK.get()).build(null));
 	public static final RegistryObject<TileEntityType<CrusherTileEntity>> CRUSHER = TILE_ENTITIES.register("crusher",

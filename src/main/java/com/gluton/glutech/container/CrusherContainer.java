@@ -69,4 +69,8 @@ public class CrusherContainer extends MachineContainer {
 		return this.currentProcessTime.get() != 0 && this.tileEntity.maxProcessTime != 0
 				? this.currentProcessTime.get() * 24 / this.tileEntity.maxProcessTime : 0;
 	}
+	
+	public CrusherTileEntity getTileEntity() {
+		return tileEntity;
+	}
 }
