@@ -92,9 +92,14 @@ public class EnergyCellTileEntity extends MachineTileEntity {
 	
 	@Override
 	public CompoundNBT saveToNBT(final CompoundNBT nbt) {
-		nbt.putInt("Energy", this.energy);
+		if (this.energy != 0) {
+			nbt.putInt("Energy", this.energy);
+		}
+		
 		this.energyIOConfig.forEach((direction, ioMode) -> {
-			nbt.putByte("EnergyIOConfig_" + direction.name(), (byte) ioMode.ordinal());
+			if (ioMode != EnergyIOMode.NONE) {
+				nbt.putByte("EnergyIOConfig_" + direction.name(), (byte) ioMode.ordinal());
+			}
 		});
 		
 		return nbt;
