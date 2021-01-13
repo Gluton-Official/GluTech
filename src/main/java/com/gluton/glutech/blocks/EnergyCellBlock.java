@@ -74,7 +74,6 @@ public class EnergyCellBlock extends MachineBlock {
 		return ActionResultType.SUCCESS;
 	}
 	
-	// TODO: make empty energy cells not drop with an nbt tag so they can be stacked
 	@Override
 	public void onBlockHarvested(World worldIn, BlockPos pos, BlockState state, PlayerEntity player) {
 		if (worldIn != null && !worldIn.isRemote() && !player.isCreative()) {
@@ -83,7 +82,7 @@ public class EnergyCellBlock extends MachineBlock {
 				GluTech.LOGGER.info(energyCellTileEntity.getEnergyIOConfg().toString());
 				ItemStack itemStack = new ItemStack(Registry.ENERGY_CELL.getBlock());
 				
-				CompoundNBT nbt = energyCellTileEntity.write(new CompoundNBT());
+				CompoundNBT nbt = energyCellTileEntity.saveToNBT(new CompoundNBT());
 				if (!nbt.isEmpty()) {
 					itemStack.setTagInfo("BlockEntityTag", nbt);
 				}
