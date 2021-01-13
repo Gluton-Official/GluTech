@@ -3,9 +3,10 @@ package com.gluton.glutech.container;
 import java.util.Objects;
 
 import com.gluton.glutech.container.slot.ResultSlot;
+import com.gluton.glutech.registry.Registry;
 import com.gluton.glutech.tileentity.CrusherTileEntity;
+import com.gluton.glutech.tileentity.MachineTileEntity;
 import com.gluton.glutech.util.FunctionalIntReferenceHolder;
-import com.gluton.glutech.util.RegistryHandler;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -29,7 +30,7 @@ public class CrusherContainer extends MachineContainer {
 
 	// Server
 	public CrusherContainer(final int windowId, final PlayerInventory playerInv, final CrusherTileEntity tile) {
-		super(RegistryHandler.CRUSHER_CONTAINER.get(), windowId, SLOTS);
+		super(Registry.CRUSHER.getContainerType(), windowId, SLOTS);
 		
 		this.tileEntity = tile;
 		this.canInteractWithCallable = IWorldPosCallable.of(tile.getWorld(), tile.getPos());
@@ -39,8 +40,9 @@ public class CrusherContainer extends MachineContainer {
 		
 		this.addPlayerInventory(playerInv);
 		
-		this.trackInt(currentProcessTime = new FunctionalIntReferenceHolder(() -> this.tileEntity.currentProcessTime,
-				value -> this.tileEntity.currentProcessTime = value));
+		this.trackInt(currentProcessTime = new FunctionalIntReferenceHolder(
+				() -> this.tileEntity.getCurrentProcessTime(),
+				value -> this.tileEntity.setCurrentProcessTime(value)));
 	}
 
 	// Client
@@ -60,17 +62,19 @@ public class CrusherContainer extends MachineContainer {
 	
 	@Override
 	public boolean canInteractWith(PlayerEntity playerIn) {
-		return isWithinUsableDistance(canInteractWithCallable, playerIn, RegistryHandler.CRUSHER_BLOCK.get());
+		return isWithinUsableDistance(canInteractWithCallable, playerIn, Registry.CRUSHER.getBlock());
 	}
 	
 	@OnlyIn(Dist.CLIENT)
 	@Override
 	public int getSmeltProgressionScaled() {
-		return this.currentProcessTime.get() != 0 && this.tileEntity.maxProcessTime != 0
-				? this.currentProcessTime.get() * 24 / this.tileEntity.maxProcessTime : 0;
+		return this.currentProcessTime.get() != 0 && this.tileEntity.getMaxProcessTime() != 0
+				? this.currentProcessTime.get() * 24 / this.tileEntity.getMaxProcessTime() : 0;
 	}
 	
-	public CrusherTileEntity getTileEntity() {
-		return tileEntity;
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T extends MachineTileEntity> T getTileEntity() {
+		return (T) tileEntity;
 	}
 }

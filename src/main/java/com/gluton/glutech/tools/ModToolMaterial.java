@@ -2,7 +2,7 @@ package com.gluton.glutech.tools;
 
 import java.util.function.Supplier;
 
-import com.gluton.glutech.util.RegistryHandler;
+import com.gluton.glutech.registry.Registry;
 
 import net.minecraft.item.IItemTier;
 import net.minecraft.item.crafting.Ingredient;
@@ -12,7 +12,7 @@ import net.minecraft.item.crafting.Ingredient;
  */
 public enum ModToolMaterial implements IItemTier {
 	// attackDamage = 1 + baseDamage (0) + addedDamage
-	GLUTONIUM(3, 1028, 9.0f, 0.0f, 12, () -> { return Ingredient.fromItems(RegistryHandler.GLUTONIUM_SWORD.get()); });
+	GLUTONIUM(3, 1028, 9.0f, 0.0f, 12, () -> { return Ingredient.fromItems(Registry.GLUTONIUM_INGOT.getItem()); });
 	
 	private final int harvestLevel;
 	private final int maxUses;

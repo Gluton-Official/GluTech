@@ -2,9 +2,9 @@ package com.gluton.glutech.blocks;
 
 import java.util.Random;
 
+import com.gluton.glutech.registry.Registry;
 import com.gluton.glutech.tileentity.SintererTileEntity;
 import com.gluton.glutech.util.MachineItemHandler;
-import com.gluton.glutech.util.RegistryHandler;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
@@ -39,11 +39,12 @@ public class SintererBlock extends MachineBlock {
 
 	@Override
 	public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-		return RegistryHandler.SINTERER.get().create();
+		return Registry.SINTERER.getTileEntity();
 	}
 	
 	@Override
 	public void onBlockPlacedBy(World worldIn, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
+		// TODO: possibly remove if not needed?
 		super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
 		if (stack.hasDisplayName()) {
 			TileEntity tile = worldIn.getTileEntity(pos);

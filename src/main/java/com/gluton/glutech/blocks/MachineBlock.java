@@ -1,14 +1,17 @@
 package com.gluton.glutech.blocks;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import com.gluton.glutech.tileentity.MachineTileEntity;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.item.ItemStack;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.DirectionProperty;
 import net.minecraft.state.StateContainer.Builder;
@@ -49,6 +52,19 @@ public abstract class MachineBlock extends Block {
 	@Override
 	public abstract TileEntity createTileEntity(BlockState state, IBlockReader world);
 	
+	/**
+	 * @return the TileEntity casted to T, or null if no TileEntity was at the position
+	 */
+	@Nullable
+	@SuppressWarnings("unchecked")
+	public <T extends MachineTileEntity> T getTileEntity(@Nonnull World world, BlockPos pos) {
+		TileEntity tile = world.getTileEntity(pos);
+		if (tile != null) {
+			return (T) tile;
+		}
+		return null;
+	}
+	
 	@Override
 	protected void fillStateContainer(Builder<Block, BlockState> builder) {
 		super.fillStateContainer(builder);
@@ -75,10 +91,15 @@ public abstract class MachineBlock extends Block {
 		return this.getDefaultState().with(FACING, context.getPlacementHorizontalFacing().getOpposite());
 	}
 	
-	@Override
-	public void onBlockPlacedBy(World worldIn, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
-		super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
-	}
+//	@Override
+//	public void onBlockHarvested(World worldIn, BlockPos pos, BlockState state, PlayerEntity player) {
+//		super.onBlockHarvested(worldIn, pos, state, player);
+//	}
+	
+//	@Override
+//	public void onBlockPlacedBy(World worldIn, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
+//		super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
+//	}
 	
 	@Override
 	public boolean hasComparatorInputOverride(BlockState state) {

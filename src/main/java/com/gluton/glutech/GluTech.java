@@ -7,7 +7,7 @@ import com.gluton.glutech.client.gui.CrusherScreen;
 import com.gluton.glutech.client.gui.FurnaceGeneratorScreen;
 import com.gluton.glutech.client.gui.SintererScreen;
 import com.gluton.glutech.client.renderer.EnergyCellRenderer;
-import com.gluton.glutech.util.RegistryHandler;
+import com.gluton.glutech.registry.Registry;
 import com.gluton.glutech.world.gen.ModOreGen;
 
 import net.minecraft.client.gui.ScreenManager;
@@ -39,7 +39,7 @@ public class GluTech {
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onTexturePreStitch);
 		
-		RegistryHandler.init();
+		Registry.init();
 		
 		MinecraftForge.EVENT_BUS.register(this);
 		
@@ -51,11 +51,11 @@ public class GluTech {
 	}
 	
 	private void doClientStuff(final FMLClientSetupEvent event) {
-		ScreenManager.registerFactory(RegistryHandler.FURNACE_GENERATOR_CONTAINER.get(), FurnaceGeneratorScreen::new);
-		ScreenManager.registerFactory(RegistryHandler.CRUSHER_CONTAINER.get(), CrusherScreen::new);
-		ScreenManager.registerFactory(RegistryHandler.SINTERER_CONTAINER.get(), SintererScreen::new);
+		ScreenManager.registerFactory(Registry.FURNACE_GENERATOR.getContainerType(), FurnaceGeneratorScreen::new);
+		ScreenManager.registerFactory(Registry.CRUSHER.getContainerType(), CrusherScreen::new);
+		ScreenManager.registerFactory(Registry.SINTERER.getContainerType(), SintererScreen::new);
 		
-		ClientRegistry.bindTileEntityRenderer(RegistryHandler.ENERGY_CELL.get(), EnergyCellRenderer::new);
+		ClientRegistry.bindTileEntityRenderer(Registry.ENERGY_CELL.getTileEntityType(), EnergyCellRenderer::new);
 	}
 	
 	private void onTexturePreStitch(TextureStitchEvent.Pre event) {

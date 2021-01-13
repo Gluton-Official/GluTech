@@ -1,141 +1,60 @@
 package com.gluton.glutech.tileentity;
 
 import java.util.EnumMap;
-import java.util.Map.Entry;
 
 import com.gluton.glutech.blocks.MachineBlock;
 import com.gluton.glutech.blocks.properties.EnergyIOMode;
-import com.gluton.glutech.recipes.MachineRecipe;
-import com.gluton.glutech.util.RegistryHandler;
+import com.gluton.glutech.registry.Registry;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.ItemStackHelper;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraftforge.common.util.Constants;
 
 /**
  * @author Gluton
  */
-public class EnergyCellTileEntity extends MachineTileEntity<MachineRecipe> {
+public class EnergyCellTileEntity extends MachineTileEntity {
 	
 	public EnumMap<Direction, EnergyIOMode> energyIOConfig = new EnumMap<>(Direction.class);
-
-	public int energy;
-	public int capacity;
-	public int maxExtract;
-	public int maxReceive;
+	
+	// TODO: add constants for all energy blocks --- or actually add it to IEnergyContainer/ nahhhh
+	public static final int BASE_ENERGY = 0;
+	public static final int CAPACITY = 100000;
+	public static final int TRANSFER_IN = 1000;
+	public static final int TRANSFER_OUT = 1000;
 	
 	public EnergyCellTileEntity() {
-		// Uses maxProcessTime of 0 to ignore maximum and inventorySize of 0 since it has no inventory
-		super(RegistryHandler.ENERGY_CELL.get(), "energy_cell", 0, 0);
+		super(Registry.ENERGY_CELL.getTileEntityType(), "energy_cell", BASE_ENERGY, CAPACITY, TRANSFER_IN, TRANSFER_OUT);
 		
 		for (Direction d : Direction.values()) {
 			this.energyIOConfig.put(d, EnergyIOMode.NONE);
 		}
-		
-		this.capacity = 100000;
-		this.maxExtract = 1000;
-		this.maxReceive = 1000;
-	}
-	
-	/**
-	 * Is not a container, returns null
-	 */
-	@Override
-	public Container createMenu(final int windowId, final PlayerInventory playerInv, final PlayerEntity playerIn) {
-		return null;
 	}
 
 	@Override
-	public void tick() {
-		boolean dirty = false;
-		
-		if (this.world != null && !this.world.isRemote) {
-			for (Direction side : Direction.values()) {
-				// tile entites should only push power, not pull
-				if (this.energyIOConfig.get(side) == EnergyIOMode.OUTPUT) {
-					TileEntity tile = this.world.getTileEntity(this.pos.offset(side));
-					// TODO: implement v
-//					if (tile instanceof MachineTileEntity) {
-					if (tile != null && tile instanceof CrusherTileEntity) {
-						CrusherTileEntity energyTile = (CrusherTileEntity) tile;
-						
-						int energyToTransfer = this.extractEnergy(this.maxExtract, true);
-						int energyTransfered = energyTile.receiveEnergy(energyToTransfer, false);
-						if (energyTransfered > 0) {
-							this.energy -= energyTransfered;
-							dirty = true;
-						}
-					}
-				}
-			}
-			
-			this.world.setBlockState(this.getPos(), this.getBlockState().with(MachineBlock.ON, this.energy > 0));
+	public boolean machineTick() {
+		setPropertyState(MachineBlock.ON, this.energy > 0);
+		if (this.energy > 0) {
+			return transferEnergy();
 		}
-		
-		if (dirty) {
-			this.markDirty();
-			this.world.notifyBlockUpdate(this.getPos(), this.getBlockState(), this.getBlockState(), Constants.BlockFlags.BLOCK_UPDATE);
-		}
+		return false;
 	}
 
 	@Override
 	public int receiveEnergy(int maxReceive, boolean simulate) {
-		if (!canReceive()) {
-			return 0;
-		}
-		
-		int energyReceived = Math.min(this.capacity - this.energy, Math.min(this.maxReceive, maxReceive));
-		if (!simulate) {
-			this.energy += energyReceived;
-			this.world.setBlockState(this.getPos(), this.getBlockState().with(MachineBlock.ON, this.energy > 0));
-			this.markDirty();
-			this.world.notifyBlockUpdate(this.getPos(), this.getBlockState(), this.getBlockState(), Constants.BlockFlags.BLOCK_UPDATE);
+		int energyReceived = super.receiveEnergy(maxReceive, simulate);
+		if (!simulate && energyReceived > 0) {
+			setPropertyState(MachineBlock.ON, this.energy > 0);
 		}
 		return energyReceived;
-	}
-	
-	public int receiveEnergyFromFace(Direction face, int maxReceive, boolean simulate) {
-		return canReceiveFromFace(face) ? receiveEnergy(maxReceive, simulate) : 0;
 	}
 
 	@Override
 	public int extractEnergy(int maxExtract, boolean simulate) {
-		if (!canExtract()) {
-			return 0;
-		}
-		
-		int energyExtracted = Math.min(this.energy, Math.min(this.maxExtract, maxExtract));
-		if (!simulate) {
-			this.energy -= energyExtracted;
-			this.world.setBlockState(this.getPos(), this.getBlockState().with(MachineBlock.ON, this.energy > 0));
-			this.markDirty();
-			this.world.notifyBlockUpdate(this.getPos(), this.getBlockState(), this.getBlockState(), Constants.BlockFlags.BLOCK_UPDATE);
+		int energyExtracted = super.extractEnergy(maxExtract, simulate);
+		if (!simulate && energyExtracted > 0) {
+			setPropertyState(MachineBlock.ON, this.energy > 0);
 		}
 		return energyExtracted;
-	}
-	
-	public int extractEnergyFromFace(Direction face, int maxExtract, boolean simulate) {
-		return canExtractFromFace(face) ? extractEnergy(maxExtract, simulate) : 0;
-	}
-
-	@Override
-	public int getEnergyStored() {
-		return this.energy;
-	}
-
-	@Override
-	public int getMaxEnergyStored() {
-		return this.capacity;
 	}
 
 	@Override
@@ -143,17 +62,20 @@ public class EnergyCellTileEntity extends MachineTileEntity<MachineRecipe> {
 		return true;
 	}
 	
-	public boolean canExtractFromFace(Direction face) {
-		return canExtract() && this.energyIOConfig.get(face) == EnergyIOMode.OUTPUT;
-	}
-
-	@Override
-	public boolean canReceive() {
-		return true;
+	public void setEnergyIOConfig(EnumMap<Direction, EnergyIOMode> energyIOConfig) {
+		this.energyIOConfig = energyIOConfig;
 	}
 	
-	public boolean canReceiveFromFace(Direction face) {
-		return canReceive() && this.energyIOConfig.get(face) == EnergyIOMode.INPUT;
+	/**
+	 * @return cloned energyIOConfig
+	 */
+	public EnumMap<Direction, EnergyIOMode> getEnergyIOConfg() {
+		return this.energyIOConfig.clone();
+	}
+	
+	@Override
+	public EnergyIOMode getEnergyIOModeForSide(Direction side) {
+		return energyIOConfig.get(side);
 	}
 	
 	public void nextIOMode(Direction side) {
@@ -161,48 +83,20 @@ public class EnergyCellTileEntity extends MachineTileEntity<MachineRecipe> {
 	}
 	
 	@Override
-	public void read(BlockState state, CompoundNBT nbt) {
-		super.read(state, nbt);
-		if (nbt.contains("CustomName", Constants.NBT.TAG_STRING)) {
-			this.customName = ITextComponent.Serializer.getComponentFromJson(nbt.getString("CustomName"));
-		}
-		
-		NonNullList<ItemStack> inv = NonNullList.<ItemStack>withSize(this.inventory.getSlots(), ItemStack.EMPTY);
-		ItemStackHelper.loadAllItems(nbt, inv);
-		this.inventory.setNonNullList(inv);
-		
-		this.currentProcessTime = nbt.getInt("CurrentProcessTime");
+	public void loadFromNBT(CompoundNBT nbt) {
 		this.energy = nbt.getInt("Energy");
 		for (Direction direction : Direction.values()) {
-			energyIOConfig.put(direction, EnergyIOMode.values()[(int) nbt.getByte("EnergyIOConfig_" + direction.name())]);
+			this.energyIOConfig.put(direction, EnergyIOMode.values()[(int) nbt.getByte("EnergyIOConfig_" + direction.name())]);
 		}
 	}
 	
 	@Override
-	public CompoundNBT write(CompoundNBT nbt) {
-		super.write(nbt);
-		if (this.customName != null) {
-			nbt.putString("CustomName", ITextComponent.Serializer.toJson(customName));
-		}
-		
-		ItemStackHelper.saveAllItems(nbt, this.inventory.toNonNullList());
-		
-		nbt.putInt("CurrentProcessTime", this.currentProcessTime);
+	public CompoundNBT saveToNBT(final CompoundNBT nbt) {
 		nbt.putInt("Energy", this.energy);
-		for (Entry<Direction, EnergyIOMode> entry : energyIOConfig.entrySet()) {
-			nbt.putByte("EnergyIOConfig_" + entry.getKey().name(), (byte) entry.getValue().ordinal());
-		}
+		this.energyIOConfig.forEach((direction, ioMode) -> {
+			nbt.putByte("EnergyIOConfig_" + direction.name(), (byte) ioMode.ordinal());
+		});
 		
 		return nbt;
-	}
-	
-	@Override
-	protected MachineRecipe getRecipe(ItemStack ...stacks) {
-		return null;
-	}
-
-	@Override
-	protected IRecipeType<MachineRecipe> getRecipeType() {
-		return null;
 	}
 }

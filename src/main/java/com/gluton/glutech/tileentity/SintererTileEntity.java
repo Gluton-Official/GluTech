@@ -1,71 +1,180 @@
 package com.gluton.glutech.tileentity;
 
+import javax.annotation.Nullable;
+
 import com.gluton.glutech.blocks.MachineBlock;
+import com.gluton.glutech.container.IContainer;
 import com.gluton.glutech.container.SintererContainer;
-import com.gluton.glutech.recipes.MachineRecipe;
+import com.gluton.glutech.recipes.CachedRecipe;
+import com.gluton.glutech.recipes.IProcessor;
+import com.gluton.glutech.recipes.Recipe;
 import com.gluton.glutech.recipes.SintererRecipe;
-import com.gluton.glutech.util.RegistryHandler;
+import com.gluton.glutech.registry.Registry;
+import com.gluton.glutech.util.MachineItemHandler;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipeType;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Direction;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemStackHandler;
 
 /**
  * @author Gluton
  */
-public class SintererTileEntity extends MachineTileEntity<SintererRecipe> {
+public class SintererTileEntity extends MachineTileEntity implements IProcessor<SintererRecipe>, IContainer<SintererContainer> {
 
-	public SintererTileEntity() {
-		super(RegistryHandler.SINTERER.get(), "sinterer", SintererContainer.SLOTS, 100);
-	}
+	private int usageRate;
+	private int currentProcessTime;
+	private int maxProcessTime;
+	private ITextComponent customName;
+	private MachineItemHandler inventory;
 	
-	@Override
-	public Container createMenu(final int windowId, final PlayerInventory playerInv, final PlayerEntity playerIn) {
-		return new SintererContainer(windowId, playerInv, this);
+	private CachedRecipe<SintererRecipe> cachedRecipe = null;
+	
+	public SintererTileEntity() {
+		super(Registry.SINTERER.getTileEntityType(), "sinterer", 0, 10000, 1000, 0);
+		
+		this.usageRate = 20;
+		this.maxProcessTime = 100;
+		
+		this.inventory = this.createInventory(SintererContainer.SLOTS);
+		
+		this.capabilities.put(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, new CapabilityCallable<IItemHandler>(this.inventory) {
+			@Override
+			public LazyOptional<IItemHandler> side(Direction side) {
+				return LazyOptional.of(() -> this.storage);
+			}
+		});
 	}
 
 	@Override
-	public void tick() {
-		boolean dirty = false;
-		
-		if (this.world != null && !this.world.isRemote) {
-			if (this.world.isBlockPowered(this.getPos())) {
-				SintererRecipe recipe = this.getRecipe(this.inventory.getStackInSlot(0), this.inventory.getStackInSlot(1));
-				if (recipe != null && outputAvailable(recipe, this.inventory.getStackInSlot(2))) {
-					if (this.currentProcessTime < this.maxProcessTime) {
-						this.world.setBlockState(this.getPos(), this.getBlockState().with(MachineBlock.ON, true));
-						this.currentProcessTime++;
-						dirty = true;
-					} else {
-						this.world.setBlockState(this.getPos(), this.getBlockState().with(MachineBlock.ON, false));
-						this.currentProcessTime = 0;
-						ItemStack output = this.getRecipe(this.inventory.getStackInSlot(0), this.inventory.getStackInSlot(1)).getRecipeOutput();
-						this.inventory.insertItem(2, output.copy(), false);
-						this.inventory.decrStackSize(0, 1);
-						this.inventory.decrStackSize(1, 1);
-						dirty = true;
-					}
-				} else if (this.currentProcessTime != 0){
-					this.currentProcessTime = 0;
-					this.world.setBlockState(this.getPos(), this.getBlockState().with(MachineBlock.ON, false));
+	public boolean machineTick() {
+		if (!isRedstonePowered() && hasEnergyAvailable()) {
+			SintererRecipe recipe = this.getRecipe(this.world, this.inventory, this.inventory.getStackInSlot(0), this.inventory.getStackInSlot(1));
+			if (recipe != null && IProcessor.outputAvailable(recipe, this.inventory.getStackInSlot(2))) {
+				if (this.currentProcessTime < this.maxProcessTime) {
+					setPropertyState(MachineBlock.ON, true);
+					this.currentProcessTime++;
+					this.energy -= this.usageRate;
+				} else {
+					halt();
+					ItemStack output = this.getRecipe(this.world, this.inventory, this.inventory.getStackInSlot(0), this.inventory.getStackInSlot(1)).getRecipeOutput();
+					this.inventory.insertItem(2, output.copy(), false);
+					this.inventory.decrStackSize(0, 1);
+					this.inventory.decrStackSize(1, 1);
 				}
-			} else if (this.currentProcessTime != 0) {
-				this.currentProcessTime = 0;
-				this.world.setBlockState(this.getPos(), this.getBlockState().with(MachineBlock.ON, false));
+				return true;
 			}
 		}
 		
-		if (dirty) {
-			this.markDirty();
-			this.world.notifyBlockUpdate(this.getPos(), this.getBlockState(), this.getBlockState(), Constants.BlockFlags.BLOCK_UPDATE);
+		if (!isRedstonePowered()) {
+			if (this.currentProcessTime != 0) {
+				halt();
+			}
+		} else {
+			setPropertyState(MachineBlock.ON, false);
 		}
+
+		return false;
+	}
+	
+//	@Override
+	public boolean hasEnergyAvailable() {
+		return this.energy >= this.usageRate;
 	}
 	
 	@Override
-	protected IRecipeType<MachineRecipe> getRecipeType() {
-		return RegistryHandler.SINTERER_RECIPE_TYPE;
+	public void halt() {
+		this.currentProcessTime = 0;
+		setPropertyState(MachineBlock.ON, false);
+	}
+	
+	@Override
+	public SintererContainer createMenu(final int windowId, final PlayerInventory playerInv, final PlayerEntity playerIn) {
+		return new SintererContainer(windowId, playerInv, this);
+	}
+	
+	@Override
+	public void loadFromNBT(CompoundNBT nbt) {
+		readCustomNameFromNBT(nbt);
+		
+		this.inventory.setNonNullList(readInventoryFromNBT(nbt, this.inventory.getSlots()));
+		
+		this.currentProcessTime = nbt.getInt("CurrentProcessTime");
+		this.energy = nbt.getInt("Energy");
+	}
+	
+	@Override
+	public CompoundNBT saveToNBT(CompoundNBT nbt) {
+		nbt = writeCustomNameToNBT(nbt);
+		
+		nbt = writeInventoryToNBT(nbt);
+		
+		nbt.putInt("CurrentProcessTime", this.currentProcessTime);
+		nbt.putInt("Energy", this.energy);
+		
+		return nbt;
+	}
+	
+	@Override
+	public String getName() {
+		return this.name;
+	}
+	
+	@Override
+	public void setCustomName(ITextComponent customName) {
+		this.customName = customName;
+	}
+	
+	@Nullable
+	@Override
+	public ITextComponent getCustomName() {
+		return this.customName;
+	}
+	
+	@Override
+	public final ItemStackHandler getInventory() {
+		return this.inventory;
+	}
+	
+	@Override
+	public void setMaxProcessTime(int maxProcessTime) {
+		this.maxProcessTime = maxProcessTime;
+	}
+	
+	@Override
+	public int getMaxProcessTime() {
+		return this.maxProcessTime;
+	}
+	
+	@Override
+	public void setCurrentProcessTime(int currentProcessTime) {
+		this.currentProcessTime = currentProcessTime;
+	}
+	
+	@Override
+	public int getCurrentProcessTime() {
+		return this.currentProcessTime;
+	}
+	
+	@Override
+	public void setCachedRecipe(CachedRecipe<SintererRecipe> recipe) {
+		this.cachedRecipe = recipe;
+	}
+	
+	@Override
+	public CachedRecipe<SintererRecipe> getCachedRecipe() {
+		return this.cachedRecipe;
+	}
+
+	@Override
+	public IRecipeType<Recipe> getRecipeType() {
+		return Registry.SINTERER.getRecipeType();
 	}
 }

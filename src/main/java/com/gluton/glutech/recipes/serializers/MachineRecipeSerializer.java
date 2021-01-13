@@ -1,6 +1,6 @@
 package com.gluton.glutech.recipes.serializers;
 
-import com.gluton.glutech.recipes.MachineRecipe;
+import com.gluton.glutech.recipes.Recipe;
 import com.google.gson.JsonArray;
 
 import net.minecraft.item.crafting.IRecipeSerializer;
@@ -13,7 +13,7 @@ import net.minecraftforge.registries.ForgeRegistryEntry;
  * @author Gluton
  *
  */
-public abstract class MachineRecipeSerializer<R extends MachineRecipe> extends ForgeRegistryEntry<IRecipeSerializer<?>> 
+public abstract class MachineRecipeSerializer<R extends Recipe> extends ForgeRegistryEntry<IRecipeSerializer<?>> 
 		implements IRecipeSerializer<R> {
 	
 	protected NonNullList<Ingredient> readIngredients(JsonArray jsonArray) {

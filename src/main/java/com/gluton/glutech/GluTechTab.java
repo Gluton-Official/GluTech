@@ -1,6 +1,6 @@
 package com.gluton.glutech;
 
-import com.gluton.glutech.util.RegistryHandler;
+import com.gluton.glutech.registry.Registry;
 
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
@@ -16,7 +16,7 @@ public class GluTechTab extends ItemGroup {
 
 	@Override
 	public ItemStack createIcon() {
-		return new ItemStack(RegistryHandler.GLUTONIUM_INGOT.get());
+		return new ItemStack(Registry.GLUTONIUM_INGOT.getItem());
 	}
 
 }

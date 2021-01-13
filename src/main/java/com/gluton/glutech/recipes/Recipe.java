@@ -6,6 +6,8 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
+import com.gluton.glutech.registry.RegistryHandler.RegisteredRecipeSerializer;
+
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.IRecipeSerializer;
@@ -19,21 +21,19 @@ import net.minecraftforge.items.wrapper.RecipeWrapper;
 /**
  * @author Gluton
  */
-public abstract class MachineRecipe implements IRecipe<RecipeWrapper> {
+public abstract class Recipe implements IRecipe<RecipeWrapper> {
 	
 	private final ResourceLocation id;
 	private NonNullList<Ingredient> ingredients;
 	private final ItemStack output;
+	private final RegisteredRecipeSerializer<?, ?, ?> serializer;
 	
-	public MachineRecipe(ResourceLocation id, NonNullList<Ingredient> ingredients, ItemStack output) {
+	public Recipe(ResourceLocation id, NonNullList<Ingredient> ingredients, ItemStack output, RegisteredRecipeSerializer<?, ?, ?> serializer) {
 		this.id = id;
 		this.ingredients = ingredients;
 		this.output = output;
+		this.serializer = serializer;
 	}
-	
-	@Nonnull
-	@Override
-	public abstract IRecipeType<?> getType();
 	
 	@Override
 	public boolean canFit(int width, int height) {
@@ -74,9 +74,17 @@ public abstract class MachineRecipe implements IRecipe<RecipeWrapper> {
 	public ResourceLocation getId() {
 		return this.id;
 	}
+	
+	@Nonnull
+	@Override
+	public IRecipeType<?> getType() {
+		return serializer.getRecipeType();
+	}
 
 	@Override
-	public abstract IRecipeSerializer<?> getSerializer();
+	public IRecipeSerializer<?> getSerializer() {
+		return serializer.getRecipeSerializer();
+	}
 
 	@Override
 	public NonNullList<Ingredient> getIngredients() {

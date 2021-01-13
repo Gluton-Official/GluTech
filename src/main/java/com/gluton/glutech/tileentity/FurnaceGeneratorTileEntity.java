@@ -1,138 +1,82 @@
 package com.gluton.glutech.tileentity;
 
-import com.gluton.glutech.blocks.FurnaceGeneratorBlock;
-import com.gluton.glutech.container.FurnaceGeneratorContainer;
-import com.gluton.glutech.recipes.MachineRecipe;
-import com.gluton.glutech.util.RegistryHandler;
+import javax.annotation.Nullable;
 
-import net.minecraft.block.BlockState;
+import com.gluton.glutech.blocks.MachineBlock;
+import com.gluton.glutech.blocks.properties.EnergyIOMode;
+import com.gluton.glutech.container.FurnaceGeneratorContainer;
+import com.gluton.glutech.container.IContainer;
+import com.gluton.glutech.registry.Registry;
+import com.gluton.glutech.util.MachineItemHandler;
+
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.ItemStackHelper;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
-import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.energy.IEnergyStorage;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemStackHandler;
 
 /**
  * @author Gluton
  */
-// Uses MachineRecipe as a default recipe, since no recipes are needed.
-public class FurnaceGeneratorTileEntity extends MachineTileEntity<MachineRecipe> implements IEnergyStorage {
+public class FurnaceGeneratorTileEntity extends MachineTileEntity implements IContainer<FurnaceGeneratorContainer> {
 	
-	public int fuelBurnTime;
-	public int energy;
-	public int capacity;
-	public int maxExtract;
-	public final int powerRate = 15;
+	private int powerRate;
+	private int remainingBurnTime;
+	private int fuelBurnTime;
+	private ITextComponent customName;
+	private MachineItemHandler inventory;
 
 	public FurnaceGeneratorTileEntity() {
-		// Uses maxProcessTime of 0 to ignore maximum
-		super(RegistryHandler.FURNACE_GENERATOR.get(), "furance_generator", FurnaceGeneratorContainer.SLOTS, 0);
+		super(Registry.FURNACE_GENERATOR.getTileEntityType(), "furnace_generator", 0, 10000, 0, 1000);
 		
+		this.powerRate = 15;
 		this.fuelBurnTime = 0;
 		
-		this.capacity = 10000;
-		this.maxExtract = 1000;
-	}
-	
-	@Override
-	public Container createMenu(final int windowId, final PlayerInventory playerInv, final PlayerEntity playerIn) {
-		return new FurnaceGeneratorContainer(windowId, playerInv, this);
+		this.inventory = this.createInventory(FurnaceGeneratorContainer.SLOTS);
+		
+		this.capabilities.put(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, new CapabilityCallable<IItemHandler>(this.inventory) {
+			@Override
+			public LazyOptional<IItemHandler> side(Direction side) {
+				return LazyOptional.of(() -> this.storage); 
+			}
+		});
 	}
 
 	@Override
-	public void tick() {
+	public boolean machineTick() {
 		boolean dirty = false;
 		
-		if (this.world != null && !this.world.isRemote) {
-			if (this.currentProcessTime > 0) {
-				if (this.energy + powerRate <= capacity) {
-					this.currentProcessTime--;
-					this.energy += powerRate;
-					dirty = true;
-				} else {
-					this.world.setBlockState(this.getPos(), this.getBlockState().with(FurnaceGeneratorBlock.ON, false));
-				}
-			} else if (!this.inventory.getStackInSlot(0).isEmpty()) {
-				this.fuelBurnTime = ForgeHooks.getBurnTime(this.inventory.getStackInSlot(0));
-				this.currentProcessTime = this.fuelBurnTime;
-				this.inventory.decrStackSize(0, 1);
-				this.world.setBlockState(this.getPos(), this.getBlockState().with(FurnaceGeneratorBlock.ON, true));
+		if (this.remainingBurnTime > 0) {
+			if (this.energy + powerRate <= capacity) {
+				this.remainingBurnTime--;
+				this.energy += powerRate;
 				dirty = true;
-			} else if (this.fuelBurnTime != 0) {
-				this.fuelBurnTime = 0;
-				this.world.setBlockState(this.getPos(), this.getBlockState().with(FurnaceGeneratorBlock.ON, false));
-				dirty = true;
+				// TODO: fix this property state not being set every tick
+				setPropertyState(MachineBlock.ON, true);
+			} else {
+				setPropertyState(MachineBlock.ON, false);
 			}
-			
-			if (this.energy > 0) {
-				for (Direction side : Direction.values()) {
-					TileEntity tile = this.world.getTileEntity(this.pos.offset(side));
-					if (tile != null) {
-						if (tile instanceof EnergyCellTileEntity) {
-							EnergyCellTileEntity energyTile = (EnergyCellTileEntity) tile;
-							if (energyTile.canReceiveFromFace(side.getOpposite())) {
-								int energyToTransfer = this.extractEnergy(this.maxExtract, true);
-								int energyTransfered = energyTile.receiveEnergy(energyToTransfer, false);
-								if (energyTransfered > 0) {
-									this.energy -= energyTransfered;
-									dirty = true;
-								}
-							}
-						} else if (tile instanceof CrusherTileEntity) {
-							CrusherTileEntity energyTile = (CrusherTileEntity) tile;
-							this.extractEnergy(this.maxExtract, false);
-							
-							int energyToTransfer = this.extractEnergy(this.maxExtract, true);
-							int energyTransfered = energyTile.receiveEnergy(energyToTransfer, false);
-							this.energy -= energyTransfered;
-							dirty = true;
-						}
-					}
-				}
-			}
+		} else if (!this.inventory.getStackInSlot(0).isEmpty()) {
+			this.fuelBurnTime = ForgeHooks.getBurnTime(this.inventory.getStackInSlot(0));
+			this.remainingBurnTime = this.fuelBurnTime;
+			this.inventory.decrStackSize(0, 1);
+			dirty = true;
+		} else if (this.fuelBurnTime != 0) {
+			this.fuelBurnTime = 0;
+			setPropertyState(MachineBlock.ON, false);
+			dirty = true;
 		}
 		
-		if (dirty) {
-			this.markDirty();
-			this.world.notifyBlockUpdate(this.getPos(), this.getBlockState(), this.getBlockState(), Constants.BlockFlags.BLOCK_UPDATE);
-		}
-	}
-	
-	@Override
-	public int receiveEnergy(int maxReceive, boolean simulate) {
-		return 0;
-	}
-	
-	@Override
-	public int extractEnergy(int maxExtract, boolean simulate) {
-		if (!canExtract()) {
-			return 0;
+		if (this.energy > 0) {
+			dirty |= transferEnergy();
 		}
 		
-		int energyExtracted = Math.min(this.energy, Math.min(this.maxExtract, maxExtract));
-		if (!simulate) {
-			this.energy -= energyExtracted;
-		}
-		return energyExtracted;
-	}
-	
-	@Override
-	public int getEnergyStored() {
-		return this.energy;
-	}
-	
-	@Override
-	public int getMaxEnergyStored() {
-		return this.capacity;
+		return dirty;
 	}
 	
 	@Override
@@ -146,31 +90,33 @@ public class FurnaceGeneratorTileEntity extends MachineTileEntity<MachineRecipe>
 	}
 	
 	@Override
-	public void read(BlockState state, CompoundNBT nbt) {
-		super.read(state, nbt);
-		if (nbt.contains("CustomName", Constants.NBT.TAG_STRING)) {
-			this.customName = ITextComponent.Serializer.getComponentFromJson(nbt.getString("CustomName"));
-		}
-		
-		NonNullList<ItemStack> inv = NonNullList.<ItemStack>withSize(this.inventory.getSlots(), ItemStack.EMPTY);
-		ItemStackHelper.loadAllItems(nbt, inv);
-		this.inventory.setNonNullList(inv);
-		
-		this.currentProcessTime = nbt.getInt("CurrentProcessTime");
-		this.fuelBurnTime = nbt.getInt("FuelBurnTime");
-		this.energy = nbt.getInt("Energy");
+	public EnergyIOMode getEnergyIOModeForSide(Direction side) {
+		return EnergyIOMode.OUTPUT;
 	}
 	
 	@Override
-	public CompoundNBT write(CompoundNBT nbt) {
-		super.write(nbt);
-		if (this.customName != null) {
-			nbt.putString("CustomName", ITextComponent.Serializer.toJson(customName));
-		}
+	public FurnaceGeneratorContainer createMenu(final int windowId, final PlayerInventory playerInv, final PlayerEntity playerIn) {
+		return new FurnaceGeneratorContainer(windowId, playerInv, this);
+	}
+	
+	@Override
+	public void loadFromNBT(CompoundNBT nbt) {
+		readCustomNameFromNBT(nbt);
 		
-		ItemStackHelper.saveAllItems(nbt, this.inventory.toNonNullList());
+		this.inventory.setNonNullList(readInventoryFromNBT(nbt, this.inventory.getSlots()));
 		
-		nbt.putInt("CurrentProcessTime", this.currentProcessTime);
+		this.remainingBurnTime = nbt.getInt("RemainingBurnTime");
+		this.fuelBurnTime = nbt.getInt("FuelBurnTime");
+		this.energy = nbt.getInt("Energy");
+	}
+
+	@Override
+	public CompoundNBT saveToNBT(CompoundNBT nbt) {
+		nbt = writeCustomNameToNBT(nbt);
+		
+		nbt = writeInventoryToNBT(nbt);
+		
+		nbt.putInt("RemainingBurnTime", this.remainingBurnTime);
 		nbt.putInt("FuelBurnTime", this.fuelBurnTime);
 		nbt.putInt("Energy", this.energy);
 		
@@ -178,12 +124,39 @@ public class FurnaceGeneratorTileEntity extends MachineTileEntity<MachineRecipe>
 	}
 
 	@Override
-	protected MachineRecipe getRecipe(ItemStack ...stacks) {
-		return null;
+	public String getName() {
+		return this.name;
 	}
-
+	
 	@Override
-	protected IRecipeType<MachineRecipe> getRecipeType() {
-		return null;
+	public void setCustomName(ITextComponent customName) {
+		this.customName = customName;
+	}
+	
+	@Nullable
+	@Override
+	public ITextComponent getCustomName() {
+		return this.customName;
+	}
+	
+	@Override
+	public final ItemStackHandler getInventory() {
+		return this.inventory;
+	}
+	
+	public void setRemainingBurnTime(int remainingBurnTime) {
+		this.remainingBurnTime = remainingBurnTime;
+	}
+	
+	public int getRemainingBurnTime() {
+		return this.remainingBurnTime;
+	}
+	
+	public void setFuelBurnTime(int fuelBurnTime) {
+		this.fuelBurnTime = fuelBurnTime;
+	}
+	
+	public int getFuelBurnTime() {
+		return this.fuelBurnTime;
 	}
 }

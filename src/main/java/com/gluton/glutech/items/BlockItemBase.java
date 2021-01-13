@@ -1,4 +1,4 @@
-package com.gluton.glutech.blocks;
+package com.gluton.glutech.items;
 
 import com.gluton.glutech.GluTech;
 
@@ -11,8 +11,11 @@ import net.minecraft.item.Item;
  */
 public class BlockItemBase extends BlockItem {
 
-	public BlockItemBase(Block block) {
-		super(block, new Item.Properties().group(GluTech.TAB));
+	public BlockItemBase(Block block, Properties properties) {
+		super(block, properties);
 	}
-
+	
+	public BlockItemBase(Block block) {
+		this(block, new Item.Properties().group(GluTech.TAB));
+	}
 }

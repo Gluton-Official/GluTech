@@ -3,7 +3,7 @@ package com.gluton.glutech.armor;
 import java.util.function.Supplier;
 
 import com.gluton.glutech.GluTech;
-import com.gluton.glutech.util.RegistryHandler;
+import com.gluton.glutech.registry.Registry;
 
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.IArmorMaterial;
@@ -18,7 +18,7 @@ import net.minecraftforge.api.distmarker.Dist;
  */
 public enum ModArmorMaterial implements IArmorMaterial {
 	GLUTONIUM(GluTech.MOD_ID + ":glutonium", 41, new int[] {4, 7, 9, 4}, 15, SoundEvents.ITEM_ARMOR_EQUIP_NETHERITE, 3.0f,
-			() -> { return Ingredient.fromItems(RegistryHandler.GLUTONIUM_INGOT.get()); }, 0.1f);
+			() -> { return Ingredient.fromItems(Registry.GLUTONIUM_INGOT.getItem()); }, 0.1f);
 
 	private static final int[] BASE_DURBILITY = new int[] {11, 16, 15, 13};
 	private final String name;

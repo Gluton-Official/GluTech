@@ -3,9 +3,10 @@ package com.gluton.glutech.container;
 import java.util.Objects;
 
 import com.gluton.glutech.container.slot.FuelSlot;
+import com.gluton.glutech.registry.Registry;
 import com.gluton.glutech.tileentity.FurnaceGeneratorTileEntity;
+import com.gluton.glutech.tileentity.MachineTileEntity;
 import com.gluton.glutech.util.FunctionalIntReferenceHolder;
-import com.gluton.glutech.util.RegistryHandler;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -24,14 +25,14 @@ public class FurnaceGeneratorContainer extends MachineContainer {
 
 	private FurnaceGeneratorTileEntity tileEntity;
 	private IWorldPosCallable canInteractWithCallable;
-	public FunctionalIntReferenceHolder currentProcessTime;
+	public FunctionalIntReferenceHolder remainingBurnTime;
 	public FunctionalIntReferenceHolder fuelBurnTime;
 	
 	public static final int SLOTS = 1;
 
 	// Server
 	public FurnaceGeneratorContainer(final int windowId, final PlayerInventory playerInv, final FurnaceGeneratorTileEntity tile) {
-		super(RegistryHandler.FURNACE_GENERATOR_CONTAINER.get(), windowId, SLOTS);
+		super(Registry.FURNACE_GENERATOR.getContainerType(), windowId, SLOTS);
 		
 		this.tileEntity = tile;
 		this.canInteractWithCallable = IWorldPosCallable.of(tile.getWorld(), tile.getPos());
@@ -40,10 +41,12 @@ public class FurnaceGeneratorContainer extends MachineContainer {
 		
 		this.addPlayerInventory(playerInv);
 		
-		this.trackInt(currentProcessTime = new FunctionalIntReferenceHolder(() -> this.tileEntity.currentProcessTime,
-				value -> this.tileEntity.currentProcessTime = value));
-		this.trackInt(fuelBurnTime = new FunctionalIntReferenceHolder(() -> this.tileEntity.fuelBurnTime,
-				value -> this.tileEntity.fuelBurnTime = value));
+		this.trackInt(remainingBurnTime = new FunctionalIntReferenceHolder(
+				() -> this.tileEntity.getRemainingBurnTime(),
+				value -> this.tileEntity.setRemainingBurnTime(value)));
+		this.trackInt(fuelBurnTime = new FunctionalIntReferenceHolder(
+				() -> this.tileEntity.getFuelBurnTime(),
+				value -> this.tileEntity.setFuelBurnTime(value)));
 	}
 	
 	// Client
@@ -63,7 +66,7 @@ public class FurnaceGeneratorContainer extends MachineContainer {
 	
 	@Override
 	public boolean canInteractWith(PlayerEntity playerIn) {
-		return isWithinUsableDistance(canInteractWithCallable, playerIn, RegistryHandler.FURNACE_GENERATOR_BLOCK.get());
+		return isWithinUsableDistance(canInteractWithCallable, playerIn, Registry.FURNACE_GENERATOR.getBlock());
 	}
 	
 	@Override
@@ -110,10 +113,12 @@ public class FurnaceGeneratorContainer extends MachineContainer {
 	@OnlyIn(Dist.CLIENT)
 	@Override
 	public int getSmeltProgressionScaled() {
-		return fuelBurnTime.get() == 0 ? 0 : currentProcessTime.get() * 13 / fuelBurnTime.get();
+		return fuelBurnTime.get() == 0 ? 0 : remainingBurnTime.get() * 13 / fuelBurnTime.get();
 	}
 	
-	public FurnaceGeneratorTileEntity getTileEntity() {
-		return tileEntity;
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T extends MachineTileEntity> T getTileEntity() {
+		return (T) tileEntity;
 	}
 }

@@ -2,9 +2,9 @@ package com.gluton.glutech.blocks;
 
 import java.util.Random;
 
+import com.gluton.glutech.registry.Registry;
 import com.gluton.glutech.tileentity.CrusherTileEntity;
 import com.gluton.glutech.util.MachineItemHandler;
-import com.gluton.glutech.util.RegistryHandler;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
@@ -39,7 +39,7 @@ public class CrusherBlock extends MachineBlock {
 	
 	@Override
 	public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-		return RegistryHandler.CRUSHER.get().create();
+		return Registry.CRUSHER.getTileEntity();
 	}
 	
 	@Override

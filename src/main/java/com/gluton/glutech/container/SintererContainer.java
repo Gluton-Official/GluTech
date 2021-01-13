@@ -3,9 +3,10 @@ package com.gluton.glutech.container;
 import java.util.Objects;
 
 import com.gluton.glutech.container.slot.ResultSlot;
+import com.gluton.glutech.registry.Registry;
+import com.gluton.glutech.tileentity.MachineTileEntity;
 import com.gluton.glutech.tileentity.SintererTileEntity;
 import com.gluton.glutech.util.FunctionalIntReferenceHolder;
-import com.gluton.glutech.util.RegistryHandler;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -29,7 +30,7 @@ public class SintererContainer extends MachineContainer {
 
 	// Server
 	public SintererContainer(final int windowId, final PlayerInventory playerInv, final SintererTileEntity tile) {
-		super(RegistryHandler.SINTERER_CONTAINER.get(), windowId, SLOTS);
+		super(Registry.SINTERER.getContainerType(), windowId, SLOTS);
 		
 		this.tileEntity = tile;
 		this.canInteractWithCallable = IWorldPosCallable.of(tile.getWorld(), tile.getPos());
@@ -40,8 +41,9 @@ public class SintererContainer extends MachineContainer {
 		
 		this.addPlayerInventory(playerInv);
 		
-		this.trackInt(currentProcessTime = new FunctionalIntReferenceHolder(() -> this.tileEntity.currentProcessTime,
-				value -> this.tileEntity.currentProcessTime = value));
+		this.trackInt(currentProcessTime = new FunctionalIntReferenceHolder(
+				() -> this.tileEntity.getCurrentProcessTime(),
+				value -> this.tileEntity.setCurrentProcessTime(value)));
 	}
 	
 	// Client
@@ -49,11 +51,6 @@ public class SintererContainer extends MachineContainer {
 		this(windowId, playerInv, getTileEntity(playerInv, data));
 	}
 	
-	@Override
-	public boolean canInteractWith(PlayerEntity playerIn) {
-		return isWithinUsableDistance(canInteractWithCallable, playerIn, RegistryHandler.SINTERER_BLOCK.get());
-	}
-
 	private static SintererTileEntity getTileEntity(final PlayerInventory playerInv, final PacketBuffer data) {
 		Objects.requireNonNull(playerInv, "playerInv cannot be null");
 		Objects.requireNonNull(data, "data cannot be null");
@@ -63,11 +60,22 @@ public class SintererContainer extends MachineContainer {
 		}
 		return (SintererTileEntity) tileAtPos;
 	}
+	
+	@Override
+	public boolean canInteractWith(PlayerEntity playerIn) {
+		return isWithinUsableDistance(canInteractWithCallable, playerIn, Registry.SINTERER.getBlock());
+	}
 
 	@OnlyIn(Dist.CLIENT)
 	@Override
 	public int getSmeltProgressionScaled() {
-		return this.currentProcessTime.get() != 0 && this.tileEntity.maxProcessTime != 0
-				? this.currentProcessTime.get() * 24 / this.tileEntity.maxProcessTime : 0;
+		return this.currentProcessTime.get() != 0 && this.tileEntity.getMaxProcessTime() != 0
+				? this.currentProcessTime.get() * 24 / this.tileEntity.getMaxProcessTime() : 0;
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T extends MachineTileEntity> T getTileEntity() {
+		return (T) tileEntity;
 	}
 }

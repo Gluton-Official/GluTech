@@ -3,7 +3,6 @@
 	"item.glutech.glutite": "Glutite",
 	"item.glutech.glutite_dust": "Glutite Dust",
 	"item.glutech.ancient_debris_powder": "Ancient Debris Powder",
-	"item.glutech.glutite_ancient_debris_blend": "Glutite Ancient Debris Blend",
 	
 	"item.glutech.glutonium_sword": "Glutonium Sword",
 	"item.glutech.glutonium_helmet": "Glutonium Helmet",
@@ -18,7 +17,7 @@
 	"block.glutech.crusher": "Crusher",
 	"block.glutech.sinterer": "Sinterer",
 	
-	"container.glutech.furance_generator": "Furnace Generator",
+	"container.glutech.furnace_generator": "Furnace Generator",
 	"container.glutech.crusher": "Crusher",
 	"container.glutech.sinterer": "Sinterer",
 
