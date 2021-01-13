@@ -14,12 +14,12 @@ import net.minecraft.nbt.CompoundNBT;
 public class EnergyCellItem extends BlockItemBase {
 
 	public EnergyCellItem(Block block) {
-		super(block, new Item.Properties().group(GluTech.TAB).maxStackSize(1));
+		super(block, new Item.Properties().group(GluTech.TAB));
 	}
 
 	@Override
 	public boolean showDurabilityBar(ItemStack stack) {
-		return true;
+		return stack.getChildTag("BlockEntityTag") != null;
 	}
 	
 	@Override
