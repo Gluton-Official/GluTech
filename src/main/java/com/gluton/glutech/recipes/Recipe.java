@@ -26,9 +26,9 @@ public abstract class Recipe implements IRecipe<RecipeWrapper> {
 	private final ResourceLocation id;
 	private NonNullList<Ingredient> ingredients;
 	private final ItemStack output;
-	private final RegisteredRecipeSerializer<?, ?, ?> serializer;
+	private final RegisteredRecipeSerializer<?, ?, ?, ?, ?> serializer;
 	
-	public Recipe(ResourceLocation id, NonNullList<Ingredient> ingredients, ItemStack output, RegisteredRecipeSerializer<?, ?, ?> serializer) {
+	public Recipe(ResourceLocation id, NonNullList<Ingredient> ingredients, ItemStack output, RegisteredRecipeSerializer<?, ?, ?, ?, ?> serializer) {
 		this.id = id;
 		this.ingredients = ingredients;
 		this.output = output;

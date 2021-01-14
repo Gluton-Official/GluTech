@@ -24,13 +24,12 @@ import com.gluton.glutech.tileentity.FurnaceGeneratorTileEntity;
 import com.gluton.glutech.tileentity.SintererTileEntity;
 import com.gluton.glutech.tools.ModToolMaterial;
 
-import net.minecraft.block.Block;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ArmorItem;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.Item.Properties;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraft.item.SwordItem;
 
@@ -63,23 +62,22 @@ public class Registry extends RegistryHandler {
 			() -> new ArmorItem(ModArmorMaterial.GLUTONIUM, EquipmentSlotType.FEET, TAB_GROUP.get()));
 	
 	// Blocks
-	public static final RegisteredBlock<GlutoniumBlock> GLUTONIUM_BLOCK = RegisteredBlock.create("glutonium_block", GlutoniumBlock::new);
-	public static final RegisteredBlock<GlutiteOreBlock> GLUTITE_ORE = RegisteredBlock.create("glutite_ore", GlutiteOreBlock::new);
+	public static final RegisteredBlock<GlutoniumBlock, BlockItem> GLUTONIUM_BLOCK = RegisteredBlock.create("glutonium_block", GlutoniumBlock::new);
+	public static final RegisteredBlock<GlutiteOreBlock, BlockItem> GLUTITE_ORE = RegisteredBlock.create("glutite_ore", GlutiteOreBlock::new);
 	
 	// Tile Entities
-	public static final RegisteredTileEntity<EnergyCellTileEntity> ENERGY_CELL = 
-			RegisteredTileEntity.create("energy_cell", EnergyCellTileEntity::new, EnergyCellBlock::new, new BlockItemSupplier<EnergyCellItem>() {
-				public <B extends Block> Supplier<EnergyCellItem> get(RegistryObject<B> block) { return () -> new EnergyCellItem(block.get()); }});
+	public static final RegisteredTileEntity<EnergyCellTileEntity, EnergyCellBlock, EnergyCellItem> ENERGY_CELL = 
+			RegisteredTileEntity.create("energy_cell", EnergyCellTileEntity::new, EnergyCellBlock::new, (block) -> () -> new EnergyCellItem(block.get())));
 	
 	// Containers
-	public static final RegisteredContainer<FurnaceGeneratorContainer, FurnaceGeneratorTileEntity> FURNACE_GENERATOR = 
+	public static final RegisteredContainer<FurnaceGeneratorContainer, FurnaceGeneratorTileEntity, FurnaceGeneratorBlock, BlockItem> FURNACE_GENERATOR = 
 			RegisteredContainer.create("furnace_generator", FurnaceGeneratorContainer::new, FurnaceGeneratorTileEntity::new, FurnaceGeneratorBlock::new);
 	
 	// Recipe Serializers
-	public static final RegisteredRecipeSerializer<CrusherRecipeSerializer, CrusherContainer, CrusherTileEntity> CRUSHER = 
+	public static final RegisteredRecipeSerializer<CrusherRecipeSerializer, CrusherContainer, CrusherTileEntity, CrusherBlock, BlockItem> CRUSHER = 
 			RegisteredRecipeSerializer.create("crusher", CrusherRecipe.RECIPE_ID, CrusherRecipeSerializer::new,
 					CrusherContainer::new, CrusherTileEntity::new, CrusherBlock::new);
-	public static final RegisteredRecipeSerializer<SintererRecipeSerializer, SintererContainer, SintererTileEntity> SINTERER = 
+	public static final RegisteredRecipeSerializer<SintererRecipeSerializer, SintererContainer, SintererTileEntity, SintererBlock, BlockItem> SINTERER = 
 			RegisteredRecipeSerializer.create("sinterer", SintererRecipe.RECIPE_ID, SintererRecipeSerializer::new,
 					SintererContainer::new, SintererTileEntity::new, SintererBlock::new);
 	
@@ -91,8 +89,5 @@ public class Registry extends RegistryHandler {
 		TILE_ENTITIES.register(bus);
 		CONTAINERS.register(bus);
 		RECIPE_SERIALIZERS.register(bus);
-		
-//		ITEMS.getEntries().stream().forEach(entry -> System.out.println(entry.getId()));
-//		BLOCKS.getEntries().stream().forEach(entry -> System.out.println(entry.getId()));
 	}
 }
