@@ -5,6 +5,7 @@ import java.util.EnumMap;
 import com.gluton.glutech.blocks.MachineBlock;
 import com.gluton.glutech.blocks.properties.EnergyIOMode;
 import com.gluton.glutech.registry.Registry;
+import com.gluton.glutech.util.NBTUtils;
 
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
@@ -92,14 +93,10 @@ public class EnergyCellTileEntity extends MachineTileEntity {
 	
 	@Override
 	public CompoundNBT saveToNBT(final CompoundNBT nbt) {
-		if (this.energy != 0) {
-			nbt.putInt("Energy", this.energy);
-		}
+		NBTUtils.putOptionalInt(nbt, "Energy", this.energy, 0);
 		
 		this.energyIOConfig.forEach((direction, ioMode) -> {
-			if (ioMode != EnergyIOMode.NONE) {
-				nbt.putByte("EnergyIOConfig_" + direction.name(), (byte) ioMode.ordinal());
-			}
+			NBTUtils.putOptionalByte(nbt, "EnergyIOConfig_" + direction.name(), (byte) ioMode.ordinal(), (byte) 0);
 		});
 		
 		return nbt;
