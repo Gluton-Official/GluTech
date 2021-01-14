@@ -7,6 +7,7 @@ import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
 /**
@@ -31,4 +32,15 @@ public abstract class MachineRecipeSerializer<R extends Recipe> extends ForgeReg
 		}
 		return ingredients;
 	}
+	
+	@Override
+	public void write(PacketBuffer buffer, R recipe) {
+		for (Ingredient ingredient : recipe.getIngredients()) {
+			ingredient.write(buffer);
+		}
+		
+		buffer.writeItemStack(recipe.getRecipeOutput(), false);
+	}
+	
+	public abstract ResourceLocation getRecipeId();
 }

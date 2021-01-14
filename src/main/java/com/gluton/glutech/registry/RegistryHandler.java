@@ -384,11 +384,11 @@ public class RegistryHandler {
 		
 		protected static <S extends MachineRecipeSerializer<? extends Recipe>, C extends Container, T extends TileEntity,
 				B extends Block> RegisteredRecipeSerializer<S, C, T, B, BlockItem> create(
-				String name, ResourceLocation recipeId, Supplier<S> recipeSupplier, IContainerFactory<C> containerFactory,
+				String name, Supplier<S> recipeSupplier, IContainerFactory<C> containerFactory,
 				Supplier<T> tileEntitySupplier, Supplier<B> blockSupplier) {
 			RegistryObject<B> block = BLOCKS.register(name, blockSupplier);
 			return new RegisteredRecipeSerializer<S, C, T, B, BlockItem>(name,
-					registerType(recipeId),
+					registerType(recipeSupplier.get().getRecipeId()),
 					RECIPE_SERIALIZERS.register(name, recipeSupplier),
 					CONTAINERS.register(name, () -> IForgeContainerType.create(containerFactory)),
 					TILE_ENTITIES.register(name, () -> TileEntityType.Builder.create(tileEntitySupplier, block.get()).build(null)),
@@ -399,11 +399,11 @@ public class RegistryHandler {
 		// TODO: add abstract getRecipeId() to Recipe so RECIPE_ID can be pulled from the RecipeSerializer supplier if possible
 		protected static <S extends MachineRecipeSerializer<? extends Recipe>, C extends Container, T extends TileEntity,
 				B extends Block, I extends BlockItem> RegisteredRecipeSerializer<S, C, T, B, I> create(
-				String name, ResourceLocation recipeId, Supplier<S> recipeSupplier, IContainerFactory<C> containerFactory,
+				String name, Supplier<S> recipeSupplier, IContainerFactory<C> containerFactory,
 				Supplier<T> tileEntitySupplier, Supplier<B> blockSupplier, Function<RegistryObject<B>, Supplier<I>> itemFunction) {
 			RegistryObject<B> block = BLOCKS.register(name, blockSupplier);
 			return new RegisteredRecipeSerializer<S, C, T, B, I>(name,
-					registerType(recipeId),
+					registerType(recipeSupplier.get().getRecipeId()),
 					RECIPE_SERIALIZERS.register(name, recipeSupplier),
 					CONTAINERS.register(name, () -> IForgeContainerType.create(containerFactory)),
 					TILE_ENTITIES.register(name, () -> TileEntityType.Builder.create(tileEntitySupplier, block.get()).build(null)),

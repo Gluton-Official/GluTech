@@ -16,6 +16,11 @@ import net.minecraftforge.common.crafting.CraftingHelper;
  * @author Gluton
  */
 public class SintererRecipeSerializer extends MachineRecipeSerializer<SintererRecipe> {
+	
+	@Override
+	public ResourceLocation getRecipeId() {
+		return SintererRecipe.RECIPE_ID;
+	}
 
 	@Override
 	public SintererRecipe read(ResourceLocation recipeId, JsonObject json) {
@@ -40,15 +45,5 @@ public class SintererRecipeSerializer extends MachineRecipeSerializer<SintererRe
 		ItemStack output = buffer.readItemStack();
 		
 		return new SintererRecipe(recipeId, ingredients, output);
-	}
-
-	@Override
-	public void write(PacketBuffer buffer, SintererRecipe recipe) {
-		buffer.writeInt(recipe.getIngredients().size());
-		for (Ingredient ingredient : recipe.getIngredients()) {
-			ingredient.write(buffer);
-		}
-		
-		buffer.writeItemStack(recipe.getRecipeOutput(), false);
 	}
 }

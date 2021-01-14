@@ -14,8 +14,6 @@ import com.gluton.glutech.container.CrusherContainer;
 import com.gluton.glutech.container.FurnaceGeneratorContainer;
 import com.gluton.glutech.container.SintererContainer;
 import com.gluton.glutech.items.EnergyCellItem;
-import com.gluton.glutech.recipes.CrusherRecipe;
-import com.gluton.glutech.recipes.SintererRecipe;
 import com.gluton.glutech.recipes.serializers.CrusherRecipeSerializer;
 import com.gluton.glutech.recipes.serializers.SintererRecipeSerializer;
 import com.gluton.glutech.tileentity.CrusherTileEntity;
@@ -75,11 +73,9 @@ public class Registry extends RegistryHandler {
 	
 	// Recipe Serializers
 	public static final RegisteredRecipeSerializer<CrusherRecipeSerializer, CrusherContainer, CrusherTileEntity, CrusherBlock, BlockItem> CRUSHER = 
-			RegisteredRecipeSerializer.create("crusher", CrusherRecipe.RECIPE_ID, CrusherRecipeSerializer::new,
-					CrusherContainer::new, CrusherTileEntity::new, CrusherBlock::new);
+			RegisteredRecipeSerializer.create("crusher", CrusherRecipeSerializer::new, CrusherContainer::new, CrusherTileEntity::new, CrusherBlock::new);
 	public static final RegisteredRecipeSerializer<SintererRecipeSerializer, SintererContainer, SintererTileEntity, SintererBlock, BlockItem> SINTERER = 
-			RegisteredRecipeSerializer.create("sinterer", SintererRecipe.RECIPE_ID, SintererRecipeSerializer::new,
-					SintererContainer::new, SintererTileEntity::new, SintererBlock::new);
+			RegisteredRecipeSerializer.create("sinterer", SintererRecipeSerializer::new, SintererContainer::new, SintererTileEntity::new, SintererBlock::new);
 	
 	public static void init() {
 		IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();

@@ -15,6 +15,11 @@ import net.minecraftforge.common.crafting.CraftingHelper;
  * @author Gluton
  */
 public class CrusherRecipeSerializer extends MachineRecipeSerializer<CrusherRecipe> {
+	
+	@Override
+	public ResourceLocation getRecipeId() {
+		return CrusherRecipe.RECIPE_ID;
+	}
 
 	@Override
 	public CrusherRecipe read(ResourceLocation recipeId, JsonObject json) {
@@ -33,14 +38,5 @@ public class CrusherRecipeSerializer extends MachineRecipeSerializer<CrusherReci
 		ItemStack output = buffer.readItemStack();
 		
 		return new CrusherRecipe(recipeId, ingredients, output);
-	}
-	
-	@Override
-	public void write(PacketBuffer buffer, CrusherRecipe recipe) {
-		for (Ingredient ingredient : recipe.getIngredients()) {
-			ingredient.write(buffer);
-		}
-		
-		buffer.writeItemStack(recipe.getRecipeOutput(), false);
 	}
 }
