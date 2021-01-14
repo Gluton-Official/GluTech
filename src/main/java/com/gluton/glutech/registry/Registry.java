@@ -67,7 +67,7 @@ public class Registry extends RegistryHandler {
 	
 	// Tile Entities
 	public static final RegisteredTileEntity<EnergyCellTileEntity, EnergyCellBlock, EnergyCellItem> ENERGY_CELL = 
-			RegisteredTileEntity.create("energy_cell", EnergyCellTileEntity::new, EnergyCellBlock::new, (block) -> () -> new EnergyCellItem(block.get())));
+			RegisteredTileEntity.create("energy_cell", EnergyCellTileEntity::new, EnergyCellBlock::new, (block) -> () -> new EnergyCellItem(block.get()));
 	
 	// Containers
 	public static final RegisteredContainer<FurnaceGeneratorContainer, FurnaceGeneratorTileEntity, FurnaceGeneratorBlock, BlockItem> FURNACE_GENERATOR = 
