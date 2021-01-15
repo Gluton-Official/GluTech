@@ -32,19 +32,20 @@ public class FurnaceGeneratorContainer extends MachineContainer {
 
 	// Server
 	public FurnaceGeneratorContainer(final int windowId, final PlayerInventory playerInv, final FurnaceGeneratorTileEntity tile) {
-		super(Registry.FURNACE_GENERATOR.getContainerType(), windowId, SLOTS);
+		super(Registry.FURNACE_GENERATOR.getContainerType(), tile, windowId, SLOTS);
 		
 		this.tileEntity = tile;
 		this.canInteractWithCallable = IWorldPosCallable.of(tile.getWorld(), tile.getPos());
 		
+		// TODO: implement item handler capability instead of using tile.getInventory()
 		this.addSlot(new FuelSlot(tile.getInventory(), 0, 80, 45));
 		
 		this.addPlayerInventory(playerInv);
 		
-		this.trackInt(remainingBurnTime = new FunctionalIntReferenceHolder(
+		this.trackInt(this.remainingBurnTime = new FunctionalIntReferenceHolder(
 				() -> this.tileEntity.getRemainingBurnTime(),
 				value -> this.tileEntity.setRemainingBurnTime(value)));
-		this.trackInt(fuelBurnTime = new FunctionalIntReferenceHolder(
+		this.trackInt(this.fuelBurnTime = new FunctionalIntReferenceHolder(
 				() -> this.tileEntity.getFuelBurnTime(),
 				value -> this.tileEntity.setFuelBurnTime(value)));
 	}
@@ -112,7 +113,7 @@ public class FurnaceGeneratorContainer extends MachineContainer {
 
 	@OnlyIn(Dist.CLIENT)
 	@Override
-	public int getSmeltProgressionScaled() {
+	public int getProgessBarScaled() {
 		return fuelBurnTime.get() == 0 ? 0 : remainingBurnTime.get() * 13 / fuelBurnTime.get();
 	}
 	

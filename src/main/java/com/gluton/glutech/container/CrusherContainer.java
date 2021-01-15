@@ -30,7 +30,7 @@ public class CrusherContainer extends MachineContainer {
 
 	// Server
 	public CrusherContainer(final int windowId, final PlayerInventory playerInv, final CrusherTileEntity tile) {
-		super(Registry.CRUSHER.getContainerType(), windowId, SLOTS);
+		super(Registry.CRUSHER.getContainerType(), tile, windowId, SLOTS);
 		
 		this.tileEntity = tile;
 		this.canInteractWithCallable = IWorldPosCallable.of(tile.getWorld(), tile.getPos());
@@ -40,7 +40,7 @@ public class CrusherContainer extends MachineContainer {
 		
 		this.addPlayerInventory(playerInv);
 		
-		this.trackInt(currentProcessTime = new FunctionalIntReferenceHolder(
+		this.trackInt(this.currentProcessTime = new FunctionalIntReferenceHolder(
 				() -> this.tileEntity.getCurrentProcessTime(),
 				value -> this.tileEntity.setCurrentProcessTime(value)));
 	}
@@ -67,7 +67,7 @@ public class CrusherContainer extends MachineContainer {
 	
 	@OnlyIn(Dist.CLIENT)
 	@Override
-	public int getSmeltProgressionScaled() {
+	public int getProgessBarScaled() {
 		return this.currentProcessTime.get() != 0 && this.tileEntity.getMaxProcessTime() != 0
 				? this.currentProcessTime.get() * 24 / this.tileEntity.getMaxProcessTime() : 0;
 	}

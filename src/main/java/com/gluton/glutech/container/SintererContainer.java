@@ -30,7 +30,7 @@ public class SintererContainer extends MachineContainer {
 
 	// Server
 	public SintererContainer(final int windowId, final PlayerInventory playerInv, final SintererTileEntity tile) {
-		super(Registry.SINTERER.getContainerType(), windowId, SLOTS);
+		super(Registry.SINTERER.getContainerType(), tile, windowId, SLOTS);
 		
 		this.tileEntity = tile;
 		this.canInteractWithCallable = IWorldPosCallable.of(tile.getWorld(), tile.getPos());
@@ -41,7 +41,7 @@ public class SintererContainer extends MachineContainer {
 		
 		this.addPlayerInventory(playerInv);
 		
-		this.trackInt(currentProcessTime = new FunctionalIntReferenceHolder(
+		this.trackInt(this.currentProcessTime = new FunctionalIntReferenceHolder(
 				() -> this.tileEntity.getCurrentProcessTime(),
 				value -> this.tileEntity.setCurrentProcessTime(value)));
 	}
@@ -68,7 +68,7 @@ public class SintererContainer extends MachineContainer {
 
 	@OnlyIn(Dist.CLIENT)
 	@Override
-	public int getSmeltProgressionScaled() {
+	public int getProgessBarScaled() {
 		return this.currentProcessTime.get() != 0 && this.tileEntity.getMaxProcessTime() != 0
 				? this.currentProcessTime.get() * 24 / this.tileEntity.getMaxProcessTime() : 0;
 	}

@@ -1,6 +1,7 @@
 package com.gluton.glutech.container;
 
 import com.gluton.glutech.tileentity.MachineTileEntity;
+import com.gluton.glutech.util.FunctionalIntReferenceHolder;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -8,13 +9,18 @@ import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 /**
- * TODO: rename to "Container" or smthn
+ * TODO: rename to "Container" or smthn (or not now since this now tracks energy)
  * 
  * @author Gluton
  */
 public abstract class MachineContainer extends Container {
+	
+	public FunctionalIntReferenceHolder energy;
+	public FunctionalIntReferenceHolder capacity;
 	
 	protected final int inventoryIndex;
 	protected final int hotbarIndex;
@@ -24,10 +30,17 @@ public abstract class MachineContainer extends Container {
 	private static final int START_Y = 84;
 	private static final int HOTBAR_Y = 142;
 
-	public MachineContainer(ContainerType<?> type, int id, final int inventoryIndex) {
+	public MachineContainer(ContainerType<?> type, MachineTileEntity tile, int id, final int inventoryIndex) {
 		super(type, id);
 		this.inventoryIndex = inventoryIndex;
 		this.hotbarIndex = inventoryIndex + 27; // offsets hotbar index by number of inventory slots
+		
+		this.trackInt(this.energy = new FunctionalIntReferenceHolder(
+				() -> tile.getEnergyStored(),
+				value -> tile.setEnergyStored(value)));
+		this.trackInt(this.capacity = new FunctionalIntReferenceHolder(
+				() -> tile.getMaxEnergyStored(),
+				value -> tile.setMaxEnergyStored(value)));
 	}
 	
 	protected void addPlayerInventory(final PlayerInventory playerInv) { 
@@ -93,7 +106,12 @@ public abstract class MachineContainer extends Container {
 		return returnStack;
 	}
 	
-	public abstract int getSmeltProgressionScaled();
+	@OnlyIn(Dist.CLIENT)
+	public int getEnergyBarScaled() {
+		return  this.capacity.get() == 0 ? 0 : this.energy.get() * 48 / this.capacity.get();
+	}
+	
+	public abstract int getProgessBarScaled();
 	
 	public abstract <T extends MachineTileEntity> T getTileEntity();
 }

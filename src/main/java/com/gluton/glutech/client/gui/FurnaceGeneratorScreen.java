@@ -21,10 +21,15 @@ public class FurnaceGeneratorScreen extends MachineScreen<FurnaceGeneratorContai
 	
 	@Override
 	protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
-		// draws inventory gui
-		this.minecraft.getTextureManager().bindTexture(TEXTURE);
-		this.blit(matrixStack, this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
+		super.drawGuiContainerBackgroundLayer(matrixStack, partialTicks, mouseX, mouseY);
 		// draws progress bar
-		this.blit(matrixStack, this.guiLeft + 80, this.guiTop + 28 + 13 - this.container.getSmeltProgressionScaled(), 176, 13 - this.container.getSmeltProgressionScaled(), 14, this.container.getSmeltProgressionScaled());
+		int progressBarWidth = this.container.getProgessBarScaled();
+		this.blit(matrixStack, this.guiLeft + 80, this.guiTop + 28 + 13 - progressBarWidth,
+				176, 13 - progressBarWidth, 14, progressBarWidth);
+	}
+	
+	@Override
+	protected ResourceLocation getBackgroundTexture() {
+		return TEXTURE;
 	}
 }
