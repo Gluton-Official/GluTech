@@ -1,18 +1,20 @@
 package com.gluton.glutech.blocks;
 
+import java.util.List;
 import java.util.Random;
 
 import com.gluton.glutech.registry.Registry;
 import com.gluton.glutech.tileentity.FurnaceGeneratorTileEntity;
-import com.gluton.glutech.util.MachineItemHandler;
+import com.gluton.glutech.util.EnergyFormat;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
@@ -22,6 +24,9 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
@@ -37,6 +42,7 @@ public class FurnaceGeneratorBlock extends MachineBlock {
 		super();
 	}
 
+	// TODO: make super method use TileEntityProvider and store registered object in field
 	@Override
 	public TileEntity createTileEntity(BlockState state, IBlockReader world) {
 		return Registry.FURNACE_GENERATOR.getTileEntity();
@@ -46,9 +52,9 @@ public class FurnaceGeneratorBlock extends MachineBlock {
 	public void onBlockPlacedBy(World worldIn, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
 		super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
 		if (stack.hasDisplayName()) {
-			TileEntity tile = worldIn.getTileEntity(pos);
-			if (tile instanceof FurnaceGeneratorTileEntity) {
-				((FurnaceGeneratorTileEntity) tile).setCustomName(stack.getDisplayName());
+			FurnaceGeneratorTileEntity tile = getTileEntity(worldIn, pos);
+			if (tile != null) {
+				tile.setCustomName(stack.getDisplayName());
 			}
 		}
 	}
@@ -80,29 +86,68 @@ public class FurnaceGeneratorBlock extends MachineBlock {
 	@Override
 	public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player,
 			Hand handIn, BlockRayTraceResult hit) {
-		if (worldIn != null && !worldIn.isRemote()) {
-			TileEntity tile = worldIn.getTileEntity(pos);
-			if (tile instanceof FurnaceGeneratorTileEntity) {
-				NetworkHooks.openGui((ServerPlayerEntity) player, (INamedContainerProvider) tile, pos);
-				return ActionResultType.SUCCESS;
+		if (worldIn == null) {
+			return ActionResultType.FAIL;
+		}
+		
+		if (!worldIn.isRemote()) {
+			FurnaceGeneratorTileEntity tile = getTileEntity(worldIn, pos);
+			if (tile != null) {
+				NetworkHooks.openGui((ServerPlayerEntity) player, tile, pos);
 			}
 		}
 		return ActionResultType.SUCCESS;
 	}
+	
+	@Override
+	public void onBlockHarvested(World worldIn, BlockPos pos, BlockState state, PlayerEntity player) {
+		if (worldIn != null && !worldIn.isRemote() && !player.isCreative()) {
+			FurnaceGeneratorTileEntity tile = getTileEntity(worldIn, pos);
+			if (tile != null) {
+				ItemStack itemStack = new ItemStack(Registry.FURNACE_GENERATOR.getBlock());
+				
+				CompoundNBT nbt = tile.saveToNBT(new CompoundNBT());
+				if (!nbt.isEmpty()) {
+					itemStack.setTagInfo("BlockEntityTag", nbt);
+				}
+				
+				ItemEntity itementity = new ItemEntity(worldIn, (double) pos.getX() + 0.5D,
+						(double) pos.getY() + 0.5D, (double) pos.getZ() + 0.5D, itemStack);
+	            itementity.setDefaultPickupDelay();
+	            worldIn.addEntity(itementity);
+			}
+		}
+		
+		super.onBlockHarvested(worldIn, pos, state, player);
+	}
 
 	@Override
 	public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-		TileEntity tile = worldIn.getTileEntity(pos);
-		if (tile instanceof FurnaceGeneratorTileEntity && state.getBlock() != newState.getBlock()) {
-			FurnaceGeneratorTileEntity furnaceGenerator = (FurnaceGeneratorTileEntity) tile;
-			((MachineItemHandler) furnaceGenerator.getInventory()).toNonNullList().forEach(item -> {
-				ItemEntity itemEntity = new ItemEntity(worldIn, pos.getX(), pos.getY(), pos.getZ(), item);
-				worldIn.addEntity(itemEntity);
-			});
+		if (state.getBlock() != newState.getBlock()) {
+//			FurnaceGeneratorTileEntity tile = getTileEntity(worldIn, pos);
+//			if (tile != null) {
+//				((MachineItemHandler) tile.getInventory()).toNonNullList().forEach(item -> {
+//					ItemEntity itemEntity = new ItemEntity(worldIn, pos.getX(), pos.getY(), pos.getZ(), item);
+//					worldIn.addEntity(itemEntity);
+//				});
+//			}
+			if (state.hasTileEntity()) {
+				worldIn.removeTileEntity(pos);
+			}
 		}
-		
-		if (state.hasTileEntity() && state.getBlock() != newState.getBlock()) {
-			worldIn.removeTileEntity(pos);
+	}
+	
+	@OnlyIn(Dist.CLIENT)
+	@Override
+	public void addInformation(ItemStack stack, IBlockReader worldIn, List<ITextComponent> tooltip,
+			ITooltipFlag flagIn) {
+		super.addInformation(stack, worldIn, tooltip, flagIn);
+		CompoundNBT nbt = stack.getChildTag("BlockEntityTag");
+		int energy = 0;
+		if (nbt != null && nbt.contains("Energy")) {
+			energy = nbt.getInt("Energy");
 		}
+		tooltip.add(new StringTextComponent(EnergyFormat.getEnergyLabel(TextFormatting.GREEN + "Energy",
+				energy, FurnaceGeneratorTileEntity.CAPACITY, EnergyFormat.COMPACT, TextFormatting.GRAY, false)));
 	}
 }

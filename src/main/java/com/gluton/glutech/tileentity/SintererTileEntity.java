@@ -11,6 +11,7 @@ import com.gluton.glutech.recipes.Recipe;
 import com.gluton.glutech.recipes.SintererRecipe;
 import com.gluton.glutech.registry.Registry;
 import com.gluton.glutech.util.MachineItemHandler;
+import com.gluton.glutech.util.NBTUtils;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -22,7 +23,6 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
 
 /**
  * @author Gluton
@@ -37,8 +37,13 @@ public class SintererTileEntity extends MachineTileEntity implements IProcessor<
 	
 	private CachedRecipe<SintererRecipe> cachedRecipe = null;
 	
+	public static final int BASE_ENERGY = 0;
+	public static final int CAPACITY = 10000;
+	public static final int TRANSFER_IN = 1000;
+	public static final int TRANSFER_OUT = 0;
+	
 	public SintererTileEntity() {
-		super(Registry.SINTERER.getTileEntityType(), "sinterer", 0, 10000, 1000, 0);
+		super(Registry.SINTERER.getTileEntityType(), "sinterer", BASE_ENERGY, CAPACITY, TRANSFER_IN, TRANSFER_OUT);
 		
 		this.usageRate = 20;
 		this.maxProcessTime = 100;
@@ -102,22 +107,23 @@ public class SintererTileEntity extends MachineTileEntity implements IProcessor<
 	
 	@Override
 	public void loadFromNBT(CompoundNBT nbt) {
+		super.loadFromNBT(nbt);
+		
 		readCustomNameFromNBT(nbt);
 		
 		this.inventory.setNonNullList(readInventoryFromNBT(nbt, this.inventory.getSlots()));
 		
 		this.currentProcessTime = nbt.getInt("CurrentProcessTime");
-		this.energy = nbt.getInt("Energy");
 	}
 	
 	@Override
 	public CompoundNBT saveToNBT(CompoundNBT nbt) {
-		nbt = writeCustomNameToNBT(nbt);
+		nbt = super.saveToNBT(nbt);
 		
+		nbt = writeCustomNameToNBT(nbt);
 		nbt = writeInventoryToNBT(nbt);
 		
-		nbt.putInt("CurrentProcessTime", this.currentProcessTime);
-		nbt.putInt("Energy", this.energy);
+		NBTUtils.putOptionalInt(nbt, "CurrentProcessTime", this.currentProcessTime, 0);
 		
 		return nbt;
 	}
@@ -139,7 +145,7 @@ public class SintererTileEntity extends MachineTileEntity implements IProcessor<
 	}
 	
 	@Override
-	public final ItemStackHandler getInventory() {
+	public final MachineItemHandler getInventory() {
 		return this.inventory;
 	}
 	

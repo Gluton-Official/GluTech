@@ -27,11 +27,11 @@ public class MachineItemHandler extends ItemStackHandler {
 	
 	public boolean isEmpty() {
 		for (ItemStack stack : this.stacks) {
-			if (stack.isEmpty() || stack.getItem() == Items.AIR) {
-				return true;
+			if (!stack.isEmpty() || stack.getItem() != Items.AIR) {
+				return false;
 			}
 		}
-		return false;
+		return true;
 	}
 	
 	public ItemStack decrStackSize(int index, int count) {

@@ -91,16 +91,6 @@ public abstract class MachineBlock extends Block {
 		return this.getDefaultState().with(FACING, context.getPlacementHorizontalFacing().getOpposite());
 	}
 	
-//	@Override
-//	public void onBlockHarvested(World worldIn, BlockPos pos, BlockState state, PlayerEntity player) {
-//		super.onBlockHarvested(worldIn, pos, state, player);
-//	}
-	
-//	@Override
-//	public void onBlockPlacedBy(World worldIn, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
-//		super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
-//	}
-	
 	@Override
 	public boolean hasComparatorInputOverride(BlockState state) {
 		return true;

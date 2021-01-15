@@ -6,6 +6,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 import com.gluton.glutech.blocks.properties.EnergyIOMode;
+import com.gluton.glutech.util.NBTUtils;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
@@ -126,6 +127,7 @@ public abstract class MachineTileEntity extends TileEntity implements ITickableT
 					IEnergyStorage energyStorage = energyTile.orElse(null);
 					if (energyStorage != null) {
 						int energyToTransfer = this.extractEnergy(this.maxExtract, true);
+						// TODO: should receiving energy force block update?
 						int energyTransfered = energyStorage.receiveEnergy(energyToTransfer, false);
 						if (energyTransfered > 0) {
 							this.energy -= energyTransfered;
@@ -178,7 +180,9 @@ public abstract class MachineTileEntity extends TileEntity implements ITickableT
 		loadFromNBT(nbt);
 	}
 	
-	public abstract void loadFromNBT(CompoundNBT nbt);
+	public void loadFromNBT(CompoundNBT nbt) {
+		this.energy = nbt.getInt("Energy");
+	}
 	
 	@Override
 	public final CompoundNBT write(CompoundNBT nbt) {
@@ -186,7 +190,10 @@ public abstract class MachineTileEntity extends TileEntity implements ITickableT
 		return saveToNBT(nbt);
 	}
 	
-	public abstract CompoundNBT saveToNBT(CompoundNBT nbt);
+	public CompoundNBT saveToNBT(final CompoundNBT nbt) {
+		NBTUtils.putOptionalInt(nbt, "Energy", this.energy, 0);
+		return nbt;
+	}
 	
 	@Nullable
 	@Override

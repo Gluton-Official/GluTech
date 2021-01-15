@@ -13,6 +13,7 @@ import com.gluton.glutech.blocks.SintererBlock;
 import com.gluton.glutech.container.CrusherContainer;
 import com.gluton.glutech.container.FurnaceGeneratorContainer;
 import com.gluton.glutech.container.SintererContainer;
+import com.gluton.glutech.items.EnergyBlockItem;
 import com.gluton.glutech.items.EnergyCellItem;
 import com.gluton.glutech.recipes.serializers.CrusherRecipeSerializer;
 import com.gluton.glutech.recipes.serializers.SintererRecipeSerializer;
@@ -65,17 +66,20 @@ public class Registry extends RegistryHandler {
 	
 	// Tile Entities
 	public static final RegisteredTileEntity<EnergyCellTileEntity, EnergyCellBlock, EnergyCellItem> ENERGY_CELL = 
-			RegisteredTileEntity.create("energy_cell", EnergyCellTileEntity::new, EnergyCellBlock::new, (block) -> () -> new EnergyCellItem(block.get()));
+			RegisteredTileEntity.create("energy_cell", EnergyCellTileEntity::new, EnergyCellBlock::new, block -> () -> new EnergyCellItem(block.get()));
 	
 	// Containers
 	public static final RegisteredContainer<FurnaceGeneratorContainer, FurnaceGeneratorTileEntity, FurnaceGeneratorBlock, BlockItem> FURNACE_GENERATOR = 
-			RegisteredContainer.create("furnace_generator", FurnaceGeneratorContainer::new, FurnaceGeneratorTileEntity::new, FurnaceGeneratorBlock::new);
+			RegisteredContainer.create("furnace_generator", FurnaceGeneratorContainer::new, FurnaceGeneratorTileEntity::new, FurnaceGeneratorBlock::new,
+					block -> () -> new EnergyBlockItem(block.get(), FurnaceGeneratorTileEntity.CAPACITY));
 	
 	// Recipe Serializers
 	public static final RegisteredRecipeSerializer<CrusherRecipeSerializer, CrusherContainer, CrusherTileEntity, CrusherBlock, BlockItem> CRUSHER = 
-			RegisteredRecipeSerializer.create("crusher", CrusherRecipeSerializer::new, CrusherContainer::new, CrusherTileEntity::new, CrusherBlock::new);
+			RegisteredRecipeSerializer.create("crusher", CrusherRecipeSerializer::new, CrusherContainer::new, CrusherTileEntity::new, CrusherBlock::new,
+					block -> () -> new EnergyBlockItem(block.get(), CrusherTileEntity.CAPACITY));
 	public static final RegisteredRecipeSerializer<SintererRecipeSerializer, SintererContainer, SintererTileEntity, SintererBlock, BlockItem> SINTERER = 
-			RegisteredRecipeSerializer.create("sinterer", SintererRecipeSerializer::new, SintererContainer::new, SintererTileEntity::new, SintererBlock::new);
+			RegisteredRecipeSerializer.create("sinterer", SintererRecipeSerializer::new, SintererContainer::new, SintererTileEntity::new, SintererBlock::new,
+					block -> () -> new EnergyBlockItem(block.get(), SintererTileEntity.CAPACITY));
 	
 	public static void init() {
 		IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();

@@ -2,7 +2,6 @@ package com.gluton.glutech.blocks;
 
 import java.util.List;
 
-import com.gluton.glutech.GluTech;
 import com.gluton.glutech.registry.Registry;
 import com.gluton.glutech.tileentity.EnergyCellTileEntity;
 import com.gluton.glutech.util.EnergyFormat;
@@ -45,6 +44,7 @@ public class EnergyCellBlock extends MachineBlock {
 		super();
 	}
 	
+	// TODO: make super method use TileEntityProvider and store registered object in field
 	@Override
 	public TileEntity createTileEntity(BlockState state, IBlockReader world) {
 		return Registry.ENERGY_CELL.getTileEntity();
@@ -53,21 +53,25 @@ public class EnergyCellBlock extends MachineBlock {
 	@Override
 	public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player,
 			Hand handIn, BlockRayTraceResult hit) {
-		EnergyCellTileEntity energyCell = getTileEntity(worldIn, pos);
-		if (energyCell == null) {
+		if (worldIn == null) {
+			return ActionResultType.FAIL;
+		}
+		
+		EnergyCellTileEntity tile = getTileEntity(worldIn, pos);
+		if (tile == null) {
 			return ActionResultType.FAIL;
 		}
 		
 		if (!worldIn.isRemote()) {
 			if (player.isSneaking() && player.inventory.getCurrentItem().isEmpty()) {
-				energyCell.nextIOMode(hit.getFace());
-				energyCell.markDirty();
-				energyCell.notifyBlockUpdate(Constants.BlockFlags.BLOCK_UPDATE);
-				energyCell.notifyBlockUpdate(Constants.BlockFlags.NOTIFY_NEIGHBORS);
+				tile.nextIOMode(hit.getFace());
+				tile.markDirty();
+				tile.notifyBlockUpdate(Constants.BlockFlags.BLOCK_UPDATE);
+				tile.notifyBlockUpdate(Constants.BlockFlags.NOTIFY_NEIGHBORS);
 			} else {
 				StringTextComponent energyAmount = new StringTextComponent(EnergyFormat.getEnergyLabel(
-						TextFormatting.GREEN + "Energy Stored", energyCell.getEnergyStored(),
-						energyCell.getMaxEnergyStored(), EnergyFormat.COMPACT));
+						TextFormatting.GREEN + "Energy Stored", tile.getEnergyStored(),
+						tile.getMaxEnergyStored(), EnergyFormat.COMPACT));
 				player.sendStatusMessage(energyAmount, true);
 			}
 		}
@@ -77,12 +81,11 @@ public class EnergyCellBlock extends MachineBlock {
 	@Override
 	public void onBlockHarvested(World worldIn, BlockPos pos, BlockState state, PlayerEntity player) {
 		if (worldIn != null && !worldIn.isRemote() && !player.isCreative()) {
-			EnergyCellTileEntity energyCellTileEntity = getTileEntity(worldIn, pos);
-			if (energyCellTileEntity != null) {
-				GluTech.LOGGER.info(energyCellTileEntity.getEnergyIOConfg().toString());
+			EnergyCellTileEntity tile = getTileEntity(worldIn, pos);
+			if (tile != null) {
 				ItemStack itemStack = new ItemStack(Registry.ENERGY_CELL.getBlock());
 				
-				CompoundNBT nbt = energyCellTileEntity.saveToNBT(new CompoundNBT());
+				CompoundNBT nbt = tile.saveToNBT(new CompoundNBT());
 				if (!nbt.isEmpty()) {
 					itemStack.setTagInfo("BlockEntityTag", nbt);
 				}
@@ -105,6 +108,7 @@ public class EnergyCellBlock extends MachineBlock {
 		}
 	}
 	
+	// TODO: move to MachineBlock?
 	@OnlyIn(Dist.CLIENT)
 	@Override
 	public void addInformation(ItemStack stack, IBlockReader worldIn, List<ITextComponent> tooltip,

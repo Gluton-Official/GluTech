@@ -8,6 +8,7 @@ import com.gluton.glutech.container.FurnaceGeneratorContainer;
 import com.gluton.glutech.container.IContainer;
 import com.gluton.glutech.registry.Registry;
 import com.gluton.glutech.util.MachineItemHandler;
+import com.gluton.glutech.util.NBTUtils;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -18,7 +19,6 @@ import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
 
 /**
  * @author Gluton
@@ -30,9 +30,14 @@ public class FurnaceGeneratorTileEntity extends MachineTileEntity implements ICo
 	private int fuelBurnTime;
 	private ITextComponent customName;
 	private MachineItemHandler inventory;
+	
+	public static final int BASE_ENERGY = 0;
+	public static final int CAPACITY = 10000;
+	public static final int TRANSFER_IN = 0;
+	public static final int TRANSFER_OUT = 1000;
 
 	public FurnaceGeneratorTileEntity() {
-		super(Registry.FURNACE_GENERATOR.getTileEntityType(), "furnace_generator", 0, 10000, 0, 1000);
+		super(Registry.FURNACE_GENERATOR.getTileEntityType(), "furnace_generator", BASE_ENERGY, CAPACITY, TRANSFER_IN, TRANSFER_OUT);
 		
 		this.powerRate = 15;
 		this.fuelBurnTime = 0;
@@ -101,24 +106,25 @@ public class FurnaceGeneratorTileEntity extends MachineTileEntity implements ICo
 	
 	@Override
 	public void loadFromNBT(CompoundNBT nbt) {
+		super.loadFromNBT(nbt);
+		
 		readCustomNameFromNBT(nbt);
 		
 		this.inventory.setNonNullList(readInventoryFromNBT(nbt, this.inventory.getSlots()));
 		
 		this.remainingBurnTime = nbt.getInt("RemainingBurnTime");
 		this.fuelBurnTime = nbt.getInt("FuelBurnTime");
-		this.energy = nbt.getInt("Energy");
 	}
 
 	@Override
 	public CompoundNBT saveToNBT(CompoundNBT nbt) {
-		nbt = writeCustomNameToNBT(nbt);
+		nbt = super.saveToNBT(nbt);
 		
+		nbt = writeCustomNameToNBT(nbt);
 		nbt = writeInventoryToNBT(nbt);
 		
-		nbt.putInt("RemainingBurnTime", this.remainingBurnTime);
-		nbt.putInt("FuelBurnTime", this.fuelBurnTime);
-		nbt.putInt("Energy", this.energy);
+		NBTUtils.putOptionalInt(nbt, "RemainingBurnTime", this.remainingBurnTime, 0);
+		NBTUtils.putOptionalInt(nbt, "FuelBurnTime", this.fuelBurnTime, 0);
 		
 		return nbt;
 	}
@@ -140,7 +146,7 @@ public class FurnaceGeneratorTileEntity extends MachineTileEntity implements ICo
 	}
 	
 	@Override
-	public final ItemStackHandler getInventory() {
+	public final MachineItemHandler getInventory() {
 		return this.inventory;
 	}
 	

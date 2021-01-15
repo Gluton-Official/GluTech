@@ -12,7 +12,6 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.items.ItemStackHandler;
 
 /**
  * @author Gluton
@@ -33,11 +32,9 @@ public interface IContainer<T extends MachineContainer> extends INamedContainerP
 	
 	default CompoundNBT writeCustomNameToNBT(CompoundNBT nbt) {
 		ITextComponent customName = getCustomName();
-		if (customName == null) {
-			return nbt;
-		}
-		
-		nbt.putString("CustomName", ITextComponent.Serializer.toJson(customName));
+		if (customName != null) {
+			nbt.putString("CustomName", ITextComponent.Serializer.toJson(customName));
+		}	
 		return nbt;
 	}
 	
@@ -48,14 +45,15 @@ public interface IContainer<T extends MachineContainer> extends INamedContainerP
 	}
 	
 	default CompoundNBT writeInventoryToNBT(CompoundNBT nbt) {
-		ItemStackHandler inventoryIn = getInventory();
-		NonNullList<ItemStack> inventory = NonNullList.create();
-		if (inventoryIn != null) {
+		MachineItemHandler inventoryIn = getInventory();
+		if (inventoryIn != null && !inventoryIn.isEmpty()) {
+			NonNullList<ItemStack> items = NonNullList.create();
 			for (int i = 0; i < inventoryIn.getSlots(); i++) {
-				inventory.add(inventoryIn.getStackInSlot(i));
+				items.add(inventoryIn.getStackInSlot(i));
 			}
+			nbt = ItemStackHelper.saveAllItems(nbt, items);
 		}
-		return ItemStackHelper.saveAllItems(nbt, inventory);
+		return nbt;
 	}
 	
 	default MachineItemHandler createInventory(int size) {
@@ -69,5 +67,5 @@ public interface IContainer<T extends MachineContainer> extends INamedContainerP
 	@Nullable
 	ITextComponent getCustomName();
 	
-	ItemStackHandler getInventory();
+	MachineItemHandler getInventory();
 }
