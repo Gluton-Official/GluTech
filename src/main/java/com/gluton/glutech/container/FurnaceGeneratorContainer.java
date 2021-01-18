@@ -35,10 +35,10 @@ public class FurnaceGeneratorContainer extends MachineContainer {
 		super(Registry.FURNACE_GENERATOR.getContainerType(), tile, windowId, SLOTS);
 		
 		this.tileEntity = tile;
-		this.canInteractWithCallable = IWorldPosCallable.of(tile.getWorld(), tile.getPos());
+		this.canInteractWithCallable = IWorldPosCallable.of(this.tileEntity.getWorld(), this.tileEntity.getPos());
 		
 		// TODO: implement item handler capability instead of using tile.getInventory()
-		this.addSlot(new FuelSlot(tile.getInventory(), 0, 80, 45));
+		this.addSlot(new FuelSlot(this.tileEntity.getInventory(), 0, 80, 45));
 		
 		this.addPlayerInventory(playerInv);
 		
@@ -82,7 +82,7 @@ public class FurnaceGeneratorContainer extends MachineContainer {
 				if (!mergeItemStack(slotStack, this.inventoryIndex, this.inventorySlots.size(), true)) {
 					return ItemStack.EMPTY;
 				}
-			} else if (FuelSlot.isFuel(slotStack) || FuelSlot.isBucket(slotStack)) {
+			} else if (slot.isItemValid(slotStack)) {
 				if (!mergeItemStack(slotStack, 0, this.inventoryIndex, false)) {	
 					if (index < hotbarIndex) {
 						// from player inventory into hotbar
