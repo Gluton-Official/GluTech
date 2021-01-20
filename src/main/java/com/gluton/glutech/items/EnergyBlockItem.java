@@ -1,11 +1,15 @@
 package com.gluton.glutech.items;
 
+import javax.annotation.Nullable;
+
 import com.gluton.glutech.GluTech;
+import com.gluton.glutech.capabilities.EnergyItemProvider;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
 /**
  * @author Gluton
@@ -25,6 +29,11 @@ public class EnergyBlockItem extends BlockItemBase {
 	public EnergyBlockItem(Block block, int capacity) {
 		this(block, new Item.Properties().group(GluTech.TAB), capacity);
 	}
+	
+	@Override
+	public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundNBT nbt) {
+		return new EnergyItemProvider(stack, this.capacity, false, true);
+	}
 
 	@Override
 	public boolean showDurabilityBar(ItemStack stack) {
@@ -43,7 +52,7 @@ public class EnergyBlockItem extends BlockItemBase {
 	
 	@Override
 	public int getItemStackLimit(ItemStack stack) {
-		return stack.hasTag() ? 1 : 64;
+		return 1;
 	}
 	
 	@Override

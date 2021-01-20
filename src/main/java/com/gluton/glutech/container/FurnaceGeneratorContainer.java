@@ -112,7 +112,6 @@ public class FurnaceGeneratorContainer extends MachineContainer {
 	}
 
 	@OnlyIn(Dist.CLIENT)
-	@Override
 	public int getProgessBarScaled() {
 		return fuelBurnTime.get() == 0 ? 0 : remainingBurnTime.get() * 13 / fuelBurnTime.get();
 	}

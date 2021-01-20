@@ -111,7 +111,5 @@ public abstract class MachineContainer extends Container {
 		return  this.capacity.get() == 0 ? 0 : this.energy.get() * 48 / this.capacity.get();
 	}
 	
-	public abstract int getProgessBarScaled();
-	
 	public abstract <T extends MachineTileEntity> T getTileEntity();
 }

@@ -4,16 +4,34 @@ import java.util.EnumMap;
 
 import com.gluton.glutech.blocks.MachineBlock;
 import com.gluton.glutech.blocks.properties.EnergyIOMode;
+import com.gluton.glutech.capabilities.CapabilityCallable;
+import com.gluton.glutech.container.EnergyCellContainer;
+import com.gluton.glutech.container.IContainer;
 import com.gluton.glutech.registry.Registry;
+import com.gluton.glutech.util.MachineItemHandler;
 import com.gluton.glutech.util.NBTUtils;
 
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.energy.IEnergyStorage;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
 
 /**
  * @author Gluton
  */
-public class EnergyCellTileEntity extends MachineTileEntity {
+public class EnergyCellTileEntity extends MachineTileEntity implements IContainer<EnergyCellContainer>{
+	
+	private ITextComponent customName;
+	private MachineItemHandler inventory;
 	
 	public EnumMap<Direction, EnergyIOMode> energyIOConfig = new EnumMap<>(Direction.class);
 	
@@ -26,18 +44,41 @@ public class EnergyCellTileEntity extends MachineTileEntity {
 	public EnergyCellTileEntity() {
 		super(Registry.ENERGY_CELL.getTileEntityType(), "energy_cell", BASE_ENERGY, CAPACITY, TRANSFER_IN, TRANSFER_OUT);
 		
+		this.inventory = this.createInventory(EnergyCellContainer.SLOTS);
+		
 		for (Direction d : Direction.values()) {
 			this.energyIOConfig.put(d, EnergyIOMode.NONE);
 		}
+		
+		this.capabilities.put(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, new CapabilityCallable<IItemHandler>(this.inventory) {
+			@Override
+			public LazyOptional<IItemHandler> side(Direction side) {
+				return LazyOptional.of(() -> this.storage); 
+			}
+		});
 	}
 
 	@Override
 	public boolean machineTick() {
+		boolean dirty = false;
 		setPropertyState(MachineBlock.ON, this.energy > 0);
 		if (this.energy > 0) {
-			return transferEnergy();
+			ItemStack itemStack = getInventory().getStackInSlot(0);
+			if (!itemStack.isEmpty()) {
+				IEnergyStorage energyItem = itemStack.getCapability(CapabilityEnergy.ENERGY).orElse(null);
+				if (energyItem != null) {
+					int energyToTransfer = this.extractEnergy(this.maxExtract, true);
+					int energyTransfered = energyItem.receiveEnergy(energyToTransfer, false);
+					if (energyTransfered > 0) {
+						this.energy -= energyTransfered;
+						dirty = true;
+						notifyBlockUpdate(Constants.BlockFlags.BLOCK_UPDATE);
+					}
+				}
+			}
+			dirty |= transferEnergy();
 		}
-		return false;
+		return dirty;
 	}
 
 	@Override
@@ -84,6 +125,11 @@ public class EnergyCellTileEntity extends MachineTileEntity {
 	}
 	
 	@Override
+	public Container createMenu(final int windowId, final PlayerInventory playerInv, final PlayerEntity playerIn) {
+		return new EnergyCellContainer(windowId, playerInv, this);
+	}
+	
+	@Override
 	public void loadFromNBT(CompoundNBT nbt) {
 		super.loadFromNBT(nbt);
 		for (Direction direction : Direction.values()) {
@@ -100,5 +146,25 @@ public class EnergyCellTileEntity extends MachineTileEntity {
 		});
 		
 		return nbt;
+	}
+
+	@Override
+	public String getName() {
+		return this.name;
+	}
+
+	@Override
+	public void setCustomName(ITextComponent customName) {
+		this.customName = customName;
+	}
+
+	@Override
+	public ITextComponent getCustomName() {
+		return this.customName;
+	}
+
+	@Override
+	public MachineItemHandler getInventory() {
+		return this.inventory;
 	}
 }

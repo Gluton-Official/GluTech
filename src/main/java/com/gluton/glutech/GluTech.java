@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.gluton.glutech.client.gui.CrusherScreen;
+import com.gluton.glutech.client.gui.EnergyCellScreen;
 import com.gluton.glutech.client.gui.FurnaceGeneratorScreen;
 import com.gluton.glutech.client.gui.SintererScreen;
 import com.gluton.glutech.client.renderer.EnergyCellRenderer;
@@ -51,6 +52,7 @@ public class GluTech {
 	}
 	
 	private void doClientStuff(final FMLClientSetupEvent event) {
+		ScreenManager.registerFactory(Registry.ENERGY_CELL.getContainerType(), EnergyCellScreen::new);
 		ScreenManager.registerFactory(Registry.FURNACE_GENERATOR.getContainerType(), FurnaceGeneratorScreen::new);
 		ScreenManager.registerFactory(Registry.CRUSHER.getContainerType(), CrusherScreen::new);
 		ScreenManager.registerFactory(Registry.SINTERER.getContainerType(), SintererScreen::new);

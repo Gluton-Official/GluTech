@@ -6,6 +6,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 import com.gluton.glutech.blocks.properties.EnergyIOMode;
+import com.gluton.glutech.capabilities.CapabilityCallable;
 import com.gluton.glutech.util.NBTUtils;
 
 import net.minecraft.block.BlockState;
@@ -123,12 +124,11 @@ public abstract class MachineTileEntity extends TileEntity implements ITickableT
 			if (canExtractFromFace(side)) {
 				TileEntity tile = this.world.getTileEntity(this.pos.offset(side));
 				if (tile != null) {
-					LazyOptional<IEnergyStorage> energyTile = tile.getCapability(CapabilityEnergy.ENERGY, side.getOpposite());
-					IEnergyStorage energyStorage = energyTile.orElse(null);
-					if (energyStorage != null) {
+					IEnergyStorage energyTile = tile.getCapability(CapabilityEnergy.ENERGY, side.getOpposite()).orElse(null);
+					if (energyTile != null) {
 						int energyToTransfer = this.extractEnergy(this.maxExtract, true);
 						// TODO: should receiving energy force block update?
-						int energyTransfered = energyStorage.receiveEnergy(energyToTransfer, false);
+						int energyTransfered = energyTile.receiveEnergy(energyToTransfer, false);
 						if (energyTransfered > 0) {
 							this.energy -= energyTransfered;
 							dirty = true;

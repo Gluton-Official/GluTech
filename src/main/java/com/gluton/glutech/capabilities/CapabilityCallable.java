@@ -1,4 +1,4 @@
-package com.gluton.glutech.tileentity;
+package com.gluton.glutech.capabilities;
 
 import net.minecraft.util.Direction;
 import net.minecraftforge.common.util.LazyOptional;

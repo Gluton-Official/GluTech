@@ -67,7 +67,6 @@ public class SintererContainer extends MachineContainer {
 	}
 
 	@OnlyIn(Dist.CLIENT)
-	@Override
 	public int getProgessBarScaled() {
 		return this.currentProcessTime.get() != 0 && this.tileEntity.getMaxProcessTime() != 0
 				? this.currentProcessTime.get() * 24 / this.tileEntity.getMaxProcessTime() : 0;

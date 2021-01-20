@@ -11,6 +11,7 @@ import com.gluton.glutech.blocks.GlutiteOreBlock;
 import com.gluton.glutech.blocks.GlutoniumBlock;
 import com.gluton.glutech.blocks.SintererBlock;
 import com.gluton.glutech.container.CrusherContainer;
+import com.gluton.glutech.container.EnergyCellContainer;
 import com.gluton.glutech.container.FurnaceGeneratorContainer;
 import com.gluton.glutech.container.SintererContainer;
 import com.gluton.glutech.items.EnergyBlockItem;
@@ -65,10 +66,11 @@ public class Registry extends RegistryHandler {
 	public static final RegisteredBlock<GlutiteOreBlock, BlockItem> GLUTITE_ORE = RegisteredBlock.create("glutite_ore", GlutiteOreBlock::new);
 	
 	// Tile Entities
-	public static final RegisteredTileEntity<EnergyCellTileEntity, EnergyCellBlock, EnergyCellItem> ENERGY_CELL = 
-			RegisteredTileEntity.create("energy_cell", EnergyCellTileEntity::new, EnergyCellBlock::new, block -> () -> new EnergyCellItem(block.get()));
 	
 	// Containers
+	public static final RegisteredContainer<EnergyCellContainer, EnergyCellTileEntity, EnergyCellBlock, EnergyCellItem> ENERGY_CELL = 
+			RegisteredContainer.create("energy_cell", EnergyCellContainer::new, EnergyCellTileEntity::new, EnergyCellBlock::new,
+					block -> () -> new EnergyCellItem(block.get()));
 	public static final RegisteredContainer<FurnaceGeneratorContainer, FurnaceGeneratorTileEntity, FurnaceGeneratorBlock, BlockItem> FURNACE_GENERATOR = 
 			RegisteredContainer.create("furnace_generator", FurnaceGeneratorContainer::new, FurnaceGeneratorTileEntity::new, FurnaceGeneratorBlock::new,
 					block -> () -> new EnergyBlockItem(block.get(), FurnaceGeneratorTileEntity.CAPACITY));

@@ -10,6 +10,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
@@ -25,6 +26,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fml.network.NetworkHooks;
 
 /**
  * @author Gluton
@@ -69,10 +71,11 @@ public class EnergyCellBlock extends MachineBlock {
 				tile.notifyBlockUpdate(Constants.BlockFlags.BLOCK_UPDATE);
 				tile.notifyBlockUpdate(Constants.BlockFlags.NOTIFY_NEIGHBORS);
 			} else {
-				StringTextComponent energyAmount = new StringTextComponent(EnergyFormat.getEnergyLabel(
-						TextFormatting.GREEN + "Energy Stored", tile.getEnergyStored(),
-						tile.getMaxEnergyStored(), EnergyFormat.COMPACT));
-				player.sendStatusMessage(energyAmount, true);
+				NetworkHooks.openGui((ServerPlayerEntity) player, tile, pos);
+//				StringTextComponent energyAmount = new StringTextComponent(EnergyFormat.getEnergyLabel(
+//						TextFormatting.GREEN + "Energy Stored", tile.getEnergyStored(),
+//						tile.getMaxEnergyStored(), EnergyFormat.COMPACT));
+//				player.sendStatusMessage(energyAmount, true);
 			}
 		}
 		return ActionResultType.SUCCESS;

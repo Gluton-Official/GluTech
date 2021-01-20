@@ -35,8 +35,8 @@ public class CrusherContainer extends MachineContainer {
 		this.tileEntity = tile;
 		this.canInteractWithCallable = IWorldPosCallable.of(tile.getWorld(), tile.getPos());
 
-		this.addSlot(new SlotItemHandler(tile.getInventory(), 0, 56, 35));
-		this.addSlot(new ResultSlot(tile.getInventory(), 1, 116, 35));
+		this.addSlot(new SlotItemHandler(this.tileEntity.getInventory(), 0, 56, 35));
+		this.addSlot(new ResultSlot(this.tileEntity.getInventory(), 1, 116, 35));
 		
 		this.addPlayerInventory(playerInv);
 		
@@ -47,10 +47,10 @@ public class CrusherContainer extends MachineContainer {
 
 	// Client
 	public CrusherContainer(final int windowId, final PlayerInventory playerInv, final PacketBuffer data) {
-		this(windowId, playerInv, getTileEntity(playerInv, data));
+		this(windowId, playerInv, readTileEntity(playerInv, data));
 	}
 	
-	private static CrusherTileEntity getTileEntity(final PlayerInventory playerInv, final PacketBuffer data) {
+	private static CrusherTileEntity readTileEntity(final PlayerInventory playerInv, final PacketBuffer data) {
 		Objects.requireNonNull(playerInv, "playerInv cannot be null");
 		Objects.requireNonNull(data, "data cannot be null");
 		final TileEntity tileAtPos = playerInv.player.world.getTileEntity(data.readBlockPos());
@@ -66,7 +66,6 @@ public class CrusherContainer extends MachineContainer {
 	}
 	
 	@OnlyIn(Dist.CLIENT)
-	@Override
 	public int getProgessBarScaled() {
 		return this.currentProcessTime.get() != 0 && this.tileEntity.getMaxProcessTime() != 0
 				? this.currentProcessTime.get() * 24 / this.tileEntity.getMaxProcessTime() : 0;

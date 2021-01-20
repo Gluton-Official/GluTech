@@ -3,6 +3,7 @@ package com.gluton.glutech.tileentity;
 import javax.annotation.Nullable;
 
 import com.gluton.glutech.blocks.MachineBlock;
+import com.gluton.glutech.capabilities.CapabilityCallable;
 import com.gluton.glutech.container.CrusherContainer;
 import com.gluton.glutech.container.IContainer;
 import com.gluton.glutech.recipes.CachedRecipe;
