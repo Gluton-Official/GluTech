@@ -1,4 +1,4 @@
-package com.gluton.glutech.tools;
+package com.gluton.glutech.items.materials;
 
 import java.util.function.Supplier;
 
@@ -10,7 +10,7 @@ import net.minecraft.item.crafting.Ingredient;
 /**
  * @author Gluton
  */
-public enum ModToolMaterial implements IItemTier {
+public enum EnergyItemMaterial implements IItemTier {
 	// attackDamage = 1 + baseDamage (0) + addedDamage
 	GLUTONIUM(3, 1028, 9.0f, 0.0f, 12, () -> { return Ingredient.fromItems(Registry.GLUTONIUM_INGOT.getItem()); });
 	
@@ -21,7 +21,7 @@ public enum ModToolMaterial implements IItemTier {
 	private final int enchantability;
 	private final Supplier<Ingredient> repairMaterial;
 	
-	ModToolMaterial(int harvestLevel, int maxUses, float efficiency, float attackDamage, int enchantability, Supplier<Ingredient> repairMaterial) {
+	EnergyItemMaterial(int harvestLevel, int maxUses, float efficiency, float attackDamage, int enchantability, Supplier<Ingredient> repairMaterial) {
 		this.harvestLevel = harvestLevel;
 		this.maxUses = maxUses;
 		this.efficiency = efficiency;

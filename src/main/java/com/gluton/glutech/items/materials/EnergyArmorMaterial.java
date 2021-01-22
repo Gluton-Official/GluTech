@@ -1,4 +1,4 @@
-package com.gluton.glutech.armor;
+package com.gluton.glutech.items.materials;
 
 import java.util.function.Supplier;
 
@@ -16,7 +16,7 @@ import net.minecraftforge.api.distmarker.Dist;
 /**
  * @author Gluton
  */
-public enum ModArmorMaterial implements IArmorMaterial {
+public enum EnergyArmorMaterial implements IArmorMaterial {
 	GLUTONIUM(GluTech.MOD_ID + ":glutonium", 41, new int[] {4, 7, 9, 4}, 15, SoundEvents.ITEM_ARMOR_EQUIP_NETHERITE, 3.0f,
 			() -> { return Ingredient.fromItems(Registry.GLUTONIUM_INGOT.getItem()); }, 0.1f);
 
@@ -30,7 +30,7 @@ public enum ModArmorMaterial implements IArmorMaterial {
 	private final Supplier<Ingredient> repairMaterial;
 	private final float knockbackResistance;
 	
-	ModArmorMaterial(String name, int durabilityMultiplier, int[] damageReductionAmount, int enchantability, 
+	EnergyArmorMaterial(String name, int durabilityMultiplier, int[] damageReductionAmount, int enchantability, 
 				SoundEvent soundEvent, float toughness, Supplier<Ingredient> repairMaterial, float knockbackResistance) {
 		this.name = name;
 		this.durabilityMultiplier = durabilityMultiplier;

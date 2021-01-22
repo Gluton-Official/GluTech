@@ -14,11 +14,9 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 /**
  * @author Gluton
  */
-public class EnergyBlockItem extends BlockItemBase {
-	
+public class EnergyBlockItem extends BlockItemBase implements IEnergyItem  {
+
 	private final int capacity;
-	
-	private static final int GREEN = 0x0000ff00;
 	
 	public EnergyBlockItem(Block block, Properties properties, int capacity) {
 		super(block, properties);
@@ -32,7 +30,8 @@ public class EnergyBlockItem extends BlockItemBase {
 	
 	@Override
 	public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundNBT nbt) {
-		return new EnergyItemProvider(stack, this.capacity, false, true);
+		return new EnergyItemProvider(stack, null, 
+				itemStack -> itemStack.getOrCreateChildTag("BlockEntityTag"), this.capacity, false, true);
 	}
 
 	@Override
