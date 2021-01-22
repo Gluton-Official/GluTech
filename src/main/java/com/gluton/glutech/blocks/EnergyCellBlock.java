@@ -72,10 +72,6 @@ public class EnergyCellBlock extends MachineBlock {
 				tile.notifyBlockUpdate(Constants.BlockFlags.NOTIFY_NEIGHBORS);
 			} else {
 				NetworkHooks.openGui((ServerPlayerEntity) player, tile, pos);
-//				StringTextComponent energyAmount = new StringTextComponent(EnergyFormat.getEnergyLabel(
-//						TextFormatting.GREEN + "Energy Stored", tile.getEnergyStored(),
-//						tile.getMaxEnergyStored(), EnergyFormat.COMPACT));
-//				player.sendStatusMessage(energyAmount, true);
 			}
 		}
 		return ActionResultType.SUCCESS;
@@ -83,20 +79,27 @@ public class EnergyCellBlock extends MachineBlock {
 	
 	@Override
 	public void onBlockHarvested(World worldIn, BlockPos pos, BlockState state, PlayerEntity player) {
-		if (worldIn != null && !worldIn.isRemote() && !player.isCreative()) {
-			EnergyCellTileEntity tile = getTileEntity(worldIn, pos);
-			if (tile != null) {
-				ItemStack itemStack = new ItemStack(Registry.ENERGY_CELL.getBlock());
-				
-				CompoundNBT nbt = tile.saveToNBT(new CompoundNBT());
-				if (!nbt.isEmpty()) {
-					itemStack.setTagInfo("BlockEntityTag", nbt);
+		if (worldIn != null && !worldIn.isRemote()) {
+			if (!player.isCreative()) {
+				EnergyCellTileEntity tile = getTileEntity(worldIn, pos);
+				if (tile != null) {
+					ItemStack itemStack = new ItemStack(Registry.ENERGY_CELL.getBlock());
+					
+					CompoundNBT nbt = tile.saveToNBT(new CompoundNBT());
+					if (!nbt.isEmpty()) {
+						itemStack.setTagInfo("BlockEntityTag", nbt);
+					}
+					
+					ItemEntity itementity = new ItemEntity(worldIn, (double) pos.getX() + 0.5D,
+							(double) pos.getY() + 0.5D, (double) pos.getZ() + 0.5D, itemStack);
+		            itementity.setDefaultPickupDelay();
+		            worldIn.addEntity(itementity);
 				}
-				
-				ItemEntity itementity = new ItemEntity(worldIn, (double) pos.getX() + 0.5D,
-						(double) pos.getY() + 0.5D, (double) pos.getZ() + 0.5D, itemStack);
-	            itementity.setDefaultPickupDelay();
-	            worldIn.addEntity(itementity);
+			} else {
+				EnergyCellTileEntity tile = getTileEntity(worldIn, pos);
+				if (tile != null) {
+					tile.spillInventory(worldIn, pos);
+				}
 			}
 		}
 		

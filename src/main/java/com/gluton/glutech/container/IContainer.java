@@ -5,13 +5,16 @@ import javax.annotation.Nullable;
 import com.gluton.glutech.GluTech;
 import com.gluton.glutech.util.MachineItemHandler;
 
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.World;
 
 /**
  * @author Gluton
@@ -58,6 +61,12 @@ public interface IContainer<T extends MachineContainer> extends INamedContainerP
 	
 	default MachineItemHandler createInventory(int size) {
 		return new MachineItemHandler(size);
+	}
+	
+	default void spillInventory(World worldIn, BlockPos pos) {
+		getInventory().toNonNullList().forEach(item -> {
+			worldIn.addEntity(new ItemEntity(worldIn, pos.getX(), pos.getY(), pos.getZ(), item));
+		});
 	}
 	
 	String getName();

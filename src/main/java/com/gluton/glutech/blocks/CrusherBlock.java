@@ -100,20 +100,27 @@ public class CrusherBlock extends MachineBlock {
 	
 	@Override
 	public void onBlockHarvested(World worldIn, BlockPos pos, BlockState state, PlayerEntity player) {
-		if (worldIn != null && !worldIn.isRemote() && !player.isCreative()) {
-			CrusherTileEntity tile = getTileEntity(worldIn, pos);
-			if (tile != null) {
-				ItemStack itemStack = new ItemStack(Registry.CRUSHER.getBlock());
-				
-				CompoundNBT nbt = tile.saveToNBT(new CompoundNBT());
-				if (!nbt.isEmpty()) {
-					itemStack.setTagInfo("BlockEntityTag", nbt);
+		if (worldIn != null && !worldIn.isRemote()) {
+			if (!player.isCreative()) {
+				CrusherTileEntity tile = getTileEntity(worldIn, pos);
+				if (tile != null) {
+					ItemStack itemStack = new ItemStack(Registry.CRUSHER.getBlock());
+					
+					CompoundNBT nbt = tile.saveToNBT(new CompoundNBT());
+					if (!nbt.isEmpty()) {
+						itemStack.setTagInfo("BlockEntityTag", nbt);
+					}
+					
+					ItemEntity itementity = new ItemEntity(worldIn, (double) pos.getX() + 0.5D,
+							(double) pos.getY() + 0.5D, (double) pos.getZ() + 0.5D, itemStack);
+		            itementity.setDefaultPickupDelay();
+		            worldIn.addEntity(itementity);
 				}
-				
-				ItemEntity itementity = new ItemEntity(worldIn, (double) pos.getX() + 0.5D,
-						(double) pos.getY() + 0.5D, (double) pos.getZ() + 0.5D, itemStack);
-	            itementity.setDefaultPickupDelay();
-	            worldIn.addEntity(itementity);
+			} else {
+				CrusherTileEntity tile = getTileEntity(worldIn, pos);
+				if (tile != null) {
+					tile.spillInventory(worldIn, pos);
+				}
 			}
 		}
 		
@@ -122,17 +129,8 @@ public class CrusherBlock extends MachineBlock {
 	
 	@Override
 	public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-		if (state.getBlock() != newState.getBlock()) {
-//			CrusherTileEntity tile = getTileEntity(worldIn, pos);
-//			if (tile != null) {
-//				((MachineItemHandler) tile.getInventory()).toNonNullList().forEach(item -> {
-//					ItemEntity itemEntity = new ItemEntity(worldIn, pos.getX(), pos.getY(), pos.getZ(), item);
-//					worldIn.addEntity(itemEntity);
-//				});
-//			}
-			if (state.hasTileEntity()) {
-				worldIn.removeTileEntity(pos);
-			}
+		if (state.getBlock() != newState.getBlock() && state.hasTileEntity()) {
+			worldIn.removeTileEntity(pos);
 		}
 	}
 	
